@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import ProductCard from "../components/catalog/ProductCard";
@@ -17,22 +17,56 @@ export default function SearchScreen({
   recentSearches,
   removeFromCart,
   setQuery,
-  setRecentSearches
+  setRecentSearches,
+  focusInput,
+  hideKeyboard
 }) {
   const normalizedQuery = query.trim().toLowerCase();
+  
   const results = useMemo(() => {
     if (!normalizedQuery) {
       return [];
     }
-    return products.filter((product) =>
-      `${product.name} ${product.categoryName} ${product.tag}`.toLowerCase().includes(normalizedQuery)
-    );
+    return products.filter((product) => {
+      // Fix bug: use product.category instead of product.categoryName
+      const haystack = `${product.name} ${product.category} ${product.tag || ""}`.toLowerCase();
+      return haystack.includes(normalizedQuery);
+    });
   }, [normalizedQuery]);
+
   const trending = trendingIds.map((id) => products.find((item) => item.id === id)).filter(Boolean);
   const wishlist = wishlistIds.map((id) => products.find((item) => item.id === id)).filter(Boolean);
 
+  const queryRef = useRef(query);
+  queryRef.current = query;
+
+  const triggerFocus = () => {
+    focusInput({
+      type: "text",
+      value: queryRef.current,
+      placeholder: "Search for atta, dal, coke and...",
+      onChangeText: (text) => {
+        setQuery(text);
+        queryRef.current = text;
+      },
+      onSubmit: () => {
+        const text = queryRef.current.trim();
+        if (text) {
+          setRecentSearches((items) => [text, ...items.filter((item) => item !== text)].slice(0, 6));
+        }
+        hideKeyboard();
+      }
+    });
+  };
+
+  useEffect(() => {
+    triggerFocus();
+    return () => hideKeyboard();
+  }, [query]); // Re-register on changes to keep the submit closure value synced
+
   const chooseSearch = (text) => {
     setQuery(text);
+    queryRef.current = text;
     setRecentSearches((items) => [text, ...items.filter((item) => item !== text)].slice(0, 6));
   };
 
@@ -46,10 +80,15 @@ export default function SearchScreen({
           autoFocus
           autoCorrect
           value={query}
-          onChangeText={setQuery}
+          onChangeText={(text) => {
+            setQuery(text);
+            queryRef.current = text;
+          }}
+          onFocus={triggerFocus}
           placeholder="Search for atta, dal, coke and..."
           returnKeyType="search"
           textContentType="none"
+          showSoftInputOnFocus={false} // Prevents native soft keyboard
           style={styles.searchInput}
         />
         <Ionicons name="mic" size={23} color={colors.ink} />
@@ -148,7 +187,8 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 18,
     fontWeight: "700",
-    paddingVertical: 6
+    paddingVertical: 6,
+    outlineStyle: "none"
   },
   content: {
     paddingBottom: 40

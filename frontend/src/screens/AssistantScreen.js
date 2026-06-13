@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import ProductCard from "../components/catalog/ProductCard";
@@ -21,7 +21,9 @@ export default function AssistantScreen({
   openProduct,
   query,
   removeFromCart,
-  setQuery
+  setQuery,
+  focusInput,
+  hideKeyboard
 }) {
   const [submittedQuery, setSubmittedQuery] = useState(query);
   const intent = useMemo(() => detectIntent(submittedQuery), [submittedQuery]);
@@ -51,8 +53,33 @@ export default function AssistantScreen({
     );
   }, [intent, submittedQuery]);
 
+  const queryRef = useRef(query);
+  queryRef.current = query;
+
+  const triggerFocus = () => {
+    focusInput({
+      type: "text",
+      value: queryRef.current,
+      placeholder: "Example: I have a party",
+      onChangeText: (text) => {
+        setQuery(text);
+        queryRef.current = text;
+      },
+      onSubmit: () => {
+        submit(queryRef.current);
+        hideKeyboard();
+      }
+    });
+  };
+
+  useEffect(() => {
+    triggerFocus();
+    return () => hideKeyboard();
+  }, [query]); // Re-register on text edits
+
   const submit = (text = query) => {
     setQuery(text);
+    queryRef.current = text;
     setSubmittedQuery(text);
   };
 
@@ -74,11 +101,15 @@ export default function AssistantScreen({
           <TextInput
             autoCorrect
             value={query}
-            onChangeText={setQuery}
-            onSubmitEditing={() => submit()}
+            onChangeText={(text) => {
+              setQuery(text);
+              queryRef.current = text;
+            }}
+            onFocus={triggerFocus}
             placeholder="Example: I have a party"
             returnKeyType="search"
             textContentType="none"
+            showSoftInputOnFocus={false}
             style={styles.input}
           />
           <Pressable onPress={() => submit()} style={styles.sendButton}>
@@ -185,7 +216,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
     paddingHorizontal: 16,
-    paddingVertical: 13
+    paddingVertical: 13,
+    outlineStyle: "none"
   },
   sendButton: {
     alignItems: "center",

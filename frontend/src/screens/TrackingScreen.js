@@ -3,7 +3,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors } from "../theme/colors";
 
-export default function TrackingScreen({ cart, paymentMethod, setPaymentMethod, total }) {
+export default function TrackingScreen({ cart, goBack, paymentMethod, setPaymentMethod, total }) {
   const [showPaymentSheet, setShowPaymentSheet] = useState(true);
   const [driverAssigned, setDriverAssigned] = useState(false);
   const eta = 9;
@@ -24,7 +24,9 @@ export default function TrackingScreen({ cart, paymentMethod, setPaymentMethod, 
     <View style={styles.screen}>
       <View style={styles.greenHeader}>
         <View style={styles.headerTop}>
-          <View style={styles.headerSpacer} />
+          <Pressable onPress={goBack} style={styles.backButton}>
+            <Ionicons name="chevron-back" size={24} color="#ffffff" />
+          </Pressable>
           <Image source={require("../../assets/intro/amazon-now-transparent.png")} style={styles.logo} />
           <View style={styles.headerSpacer} />
         </View>
@@ -184,6 +186,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between"
   },
   headerSpacer: {
+    width: 32
+  },
+  backButton: {
+    alignItems: "center",
+    height: 34,
+    justifyContent: "center",
     width: 32
   },
   logo: {

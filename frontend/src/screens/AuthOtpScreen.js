@@ -1,69 +1,138 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { colors } from "../theme/colors";
 
-const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "clear", "0", "back"];
-
-export default function AuthOtpScreen({ email, onBack, onVerified }) {
+export default function AuthOtpScreen({
+  email,
+  onBack,
+  onVerified,
+  focusInput,
+  updateKeyboardValue,
+  hideKeyboard,
+  triggerSms
+}) {
   const [otp, setOtp] = useState("");
-  const isCorrect = otp === "1234";
+  const [smsArrived, setSmsArrived] = useState(false);
+  const otpRef = useRef(otp);
+  otpRef.current = otp;
 
-  const pressKey = (key) => {
-    if (key === "clear") {
-      setOtp("");
-      return;
+  const triggerFocus = (hasSms = false) => {
+    focusInput({
+      type: "numeric",
+      value: otpRef.current,
+      placeholder: "",
+      onChangeText: (text) => {
+        const clean = text.replace(/[^0-9]/g, "").slice(0, 6);
+        setOtp(clean);
+        otpRef.current = clean;
+        updateKeyboardValue(clean);
+      },
+      onSubmit: () => {
+        if (otpRef.current === "123456") {
+          onVerified();
+        }
+      },
+      suggestion: hasSms ? "123456" : null
+    });
+  };
+
+  useEffect(() => {
+    // Initial focus on numeric keyboard without suggestion
+    triggerFocus(false);
+
+    // Simulate SMS arrival after 2 seconds
+    const timer = setTimeout(() => {
+      setSmsArrived(true);
+      triggerSms();
+      // Re-focus keyboard with SMS AutoFill suggestion!
+      triggerFocus(true);
+    }, 2000);
+
+    return () => {
+      clearTimeout(timer);
+      hideKeyboard();
+    };
+  }, []);
+
+  // Watch OTP changes to auto-verify when 6 digits are reached
+  useEffect(() => {
+    if (otp === "123456") {
+      // Small timeout for visual confirmation of the 6th digit filling
+      const t = setTimeout(() => {
+        onVerified();
+      }, 300);
+      return () => clearTimeout(t);
     }
-    if (key === "back") {
-      setOtp((value) => value.slice(0, -1));
-      return;
-    }
-    setOtp((value) => (value.length < 4 ? `${value}${key}` : value));
+  }, [otp]);
+
+  // Re-trigger focus with SMS suggestion if keyboard is opened/closed
+  const handleFocusClick = () => {
+    triggerFocus(smsArrived);
   };
 
   return (
     <View style={styles.screen}>
-      <Pressable onPress={onBack} style={styles.back}>
-        <Ionicons name="arrow-back" size={24} color={colors.amazonBlue} />
-      </Pressable>
-      <View style={styles.message}>
-        <Text style={styles.messageTitle}>Amazon Now OTP</Text>
-        <Text style={styles.messageText}>Your verification code is 1234</Text>
-      </View>
-      <View style={styles.panel}>
-        <Text style={styles.eyebrow}>VERIFY AMAZON ACCOUNT</Text>
-        <Text style={styles.title}>Enter OTP</Text>
-        <Text style={styles.copy}>Sent to the phone registered with {email}</Text>
-        <View style={styles.otpRow}>
-          {[0, 1, 2, 3].map((index) => (
-            <View key={index} style={[styles.otpBox, otp[index] && styles.otpBoxFilled]}>
-              <Text style={styles.otpDigit}>{otp[index] || ""}</Text>
-            </View>
-          ))}
-        </View>
-        <Pressable onPress={() => setOtp("1234")} style={styles.otpSuggestion}>
-          <Ionicons name="chatbubble-ellipses" size={16} color="#2673c9" />
-          <Text style={styles.otpSuggestionText}>1234 from Messages</Text>
+      {/* iOS Top Nav Bar */}
+      <View style={styles.navBar}>
+        <Pressable onPress={onBack} style={styles.navBack}>
+          <Ionicons name="chevron-back" size={24} color="#007aff" />
+          <Text style={styles.navBackText}>Back</Text>
         </Pressable>
-        {otp.length === 4 && !isCorrect ? (
-          <Text style={styles.error}>Incorrect OTP. Copy the message code above.</Text>
-        ) : null}
-        {isCorrect ? (
-          <Pressable onPress={onVerified} style={styles.button}>
-            <Text style={styles.buttonText}>Continue</Text>
-          </Pressable>
-        ) : null}
+        <Text style={styles.navTitle}>Verification</Text>
+        <View style={styles.navPlaceholder} />
       </View>
-      <View style={styles.keypad}>
-        {keys.map((key) => (
-          <Pressable key={key} onPress={() => pressKey(key)} style={styles.key}>
-            {key === "back" ? (
-              <Ionicons name="backspace-outline" size={25} color={colors.ink} />
-            ) : (
-              <Text style={styles.keyText}>{key === "clear" ? "Clear" : key}</Text>
-            )}
+
+      <View style={styles.content}>
+        <Text style={styles.title}>Enter security code</Text>
+        <Text style={styles.subtitle}>
+          For security, we've sent a one-time verification code to:{"\n"}
+          <Text style={styles.emailHighlight}>{email}</Text>
+        </Text>
+
+        {/* 6 Digit Passcode Display Box Row */}
+        <Pressable onPress={handleFocusClick} style={styles.otpRow}>
+          {[0, 1, 2, 3, 4, 5].map((index) => {
+            const digit = otp[index] || "";
+            const isActive = otp.length === index;
+            return (
+              <React.Fragment key={index}>
+                {/* Visual gap spacer between box 2 and 3 (splitting 3 and 3 digits) */}
+                {index === 3 ? <View style={styles.otpSeparator} /> : null}
+                
+                <View style={[styles.otpBox, isActive && styles.otpBoxActive, digit && styles.otpBoxFilled]}>
+                  {isActive ? (
+                    <View style={styles.blinkingCursor} />
+                  ) : (
+                    <Text style={styles.otpText}>{digit}</Text>
+                  )}
+                </View>
+              </React.Fragment>
+            );
+          })}
+        </Pressable>
+
+        {otp.length === 6 && otp !== "123456" ? (
+          <Text style={styles.errorText}>Invalid code. Please try again.</Text>
+        ) : null}
+
+        {/* Action Button */}
+        <Pressable
+          disabled={otp.length !== 6}
+          onPress={() => {
+            if (otp === "123456") onVerified();
+          }}
+          style={[styles.button, otp.length !== 6 && styles.buttonDisabled]}
+        >
+          <Text style={styles.buttonText}>Submit Code</Text>
+        </Pressable>
+
+        <View style={styles.linksRow}>
+          <Text style={styles.resendText}>Didn't receive the code?</Text>
+          <Pressable onPress={() => triggerFocus(smsArrived)}>
+            <Text style={styles.resendLink}>Resend Code</Text>
           </Pressable>
-        ))}
+        </View>
       </View>
     </View>
   );
@@ -71,143 +140,138 @@ export default function AuthOtpScreen({ email, onBack, onVerified }) {
 
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: "#eaf8fc",
-    flex: 1,
-    padding: 18,
-    paddingTop: 34
+    backgroundColor: "#ffffff",
+    flex: 1
   },
-  back: {
+  navBar: {
     alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderRadius: 21,
-    height: 42,
-    justifyContent: "center",
-    width: 42
+    borderBottomColor: "#e5e7eb",
+    borderBottomWidth: 0.5,
+    flexDirection: "row",
+    height: 48,
+    justifyContent: "space-between",
+    paddingHorizontal: 8
   },
-  message: {
-    alignSelf: "stretch",
-    backgroundColor: "#ffffff",
-    borderColor: "#cfe7ef",
-    borderRadius: 14,
-    borderWidth: 1,
-    marginTop: 14,
-    padding: 14
+  navBack: {
+    alignItems: "center",
+    flexDirection: "row"
   },
-  messageTitle: {
-    color: colors.amazonBlue,
-    fontSize: 14,
-    fontWeight: "900"
+  navBackText: {
+    color: "#007aff",
+    fontSize: 16
   },
-  messageText: {
-    color: colors.ink,
-    fontSize: 15,
-    fontWeight: "800",
-    marginTop: 4
+  navTitle: {
+    color: "#000000",
+    fontSize: 16,
+    fontWeight: "700"
   },
-  panel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#d5e8ee",
-    borderRadius: 8,
-    borderWidth: 1,
-    marginTop: 16,
-    padding: 18
+  navPlaceholder: {
+    width: 60
   },
-  eyebrow: {
-    color: "#007185",
-    fontSize: 11,
-    fontWeight: "900"
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: 28
   },
   title: {
-    color: colors.ink,
-    fontSize: 28,
-    fontWeight: "900",
-    marginTop: 8
+    color: "#000000",
+    fontSize: 26,
+    fontWeight: "300",
+    marginBottom: 10
   },
-  copy: {
-    color: colors.muted,
+  subtitle: {
+    color: "#4b5563",
     fontSize: 14,
-    fontWeight: "700",
-    lineHeight: 21,
-    marginTop: 8
+    lineHeight: 20,
+    marginBottom: 28
+  },
+  emailHighlight: {
+    color: "#000000",
+    fontWeight: "700"
   },
   otpRow: {
+    alignItems: "center",
     flexDirection: "row",
-    gap: 10,
-    marginTop: 18
+    justifyContent: "center",
+    marginBottom: 28,
+    width: "100%"
   },
   otpBox: {
     alignItems: "center",
-    borderColor: "#9ebbc5",
-    borderRadius: 9,
-    borderWidth: 1,
-    flex: 1,
-    height: 54,
-    justifyContent: "center"
+    backgroundColor: "#f3f4f6",
+    borderRadius: 8,
+    height: 48,
+    justifyContent: "center",
+    marginHorizontal: 4,
+    width: 40,
+    borderColor: "#d1d5db",
+    borderWidth: 1
+  },
+  otpBoxActive: {
+    borderColor: "#007aff",
+    borderWidth: 1.5,
+    backgroundColor: "#ffffff"
   },
   otpBoxFilled: {
-    borderColor: colors.sky,
-    backgroundColor: "#effbff"
+    backgroundColor: "#ffffff",
+    borderColor: "#9ca3af"
   },
-  otpDigit: {
-    color: colors.ink,
-    fontSize: 24,
-    fontWeight: "900"
+  otpText: {
+    color: "#000000",
+    fontSize: 22,
+    fontWeight: "700"
   },
-  error: {
-    color: "#b42318",
-    fontSize: 12,
-    fontWeight: "800",
-    marginTop: 10,
-    textAlign: "center"
+  otpSeparator: {
+    height: 2,
+    width: 12,
+    backgroundColor: "#9ca3af",
+    marginHorizontal: 6
   },
-  otpSuggestion: {
-    alignItems: "center",
-    alignSelf: "center",
-    backgroundColor: "#edf6ff",
-    borderRadius: 16,
-    flexDirection: "row",
-    gap: 6,
-    marginTop: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 7
+  blinkingCursor: {
+    backgroundColor: "#007aff",
+    height: 20,
+    width: 2
   },
-  otpSuggestionText: {
-    color: "#2673c9",
-    fontSize: 12,
-    fontWeight: "900"
+  errorText: {
+    color: "#dc2626",
+    fontSize: 13,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 14
   },
   button: {
     alignItems: "center",
-    backgroundColor: colors.amazonOrange,
-    borderRadius: 7,
-    marginTop: 16,
-    paddingVertical: 14
+    backgroundColor: "#ff9900",
+    borderRadius: 4,
+    height: 44,
+    justifyContent: "center",
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 1
+  },
+  buttonDisabled: {
+    backgroundColor: "#f3d078",
+    opacity: 0.8
   },
   buttonText: {
-    color: "#17202b",
+    color: "#111827",
     fontSize: 15,
-    fontWeight: "900"
+    fontWeight: "500"
   },
-  keypad: {
-    bottom: 18,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-    left: 18,
-    position: "absolute",
-    right: 18
-  },
-  key: {
+  linksRow: {
     alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderRadius: 14,
-    flexBasis: "30.9%",
-    height: 52,
-    justifyContent: "center"
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 22
   },
-  keyText: {
-    color: colors.ink,
-    fontSize: 23,
-    fontWeight: "800"
+  resendText: {
+    color: "#4b5563",
+    fontSize: 13
+  },
+  resendLink: {
+    color: "#0066c0",
+    fontSize: 13,
+    fontWeight: "700",
+    marginLeft: 6
   }
 });
