@@ -4,6 +4,7 @@ import CategoryGrid from "../components/catalog/CategoryGrid";
 import ProductShelf from "../components/catalog/ProductShelf";
 import HomeHeader from "../components/home/HomeHeader";
 import PromoBanner from "../components/home/PromoBanner";
+import QuickActions from "../components/home/QuickActions";
 import SearchHeader from "../components/home/SearchHeader";
 import { categorySections, products, topTabs } from "../data/products";
 
@@ -11,8 +12,11 @@ export default function HomeScreen({
   activeTab,
   addToCart,
   cartCount,
+  customer,
+  getQuantity,
   openCategory,
   openProduct,
+  removeFromCart,
   searchQuery,
   setActiveTab,
   setSearchQuery,
@@ -37,6 +41,7 @@ export default function HomeScreen({
 
   const featured = useMemo(() => visibleProducts.slice(0, 8), [visibleProducts]);
   const dealProducts = useMemo(() => visibleProducts.slice(8, 14), [visibleProducts]);
+  const fullCatalog = useMemo(() => visibleProducts.slice(0, 84), [visibleProducts]);
   const showCategories = activeTab === "all" && !normalizedQuery;
   const shelfTitle = normalizedQuery
     ? `Search results for "${searchQuery}"`
@@ -51,7 +56,7 @@ export default function HomeScreen({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
-        <HomeHeader cartCount={cartCount} setScreen={setScreen} />
+        <HomeHeader cartCount={cartCount} customer={customer} setScreen={setScreen} />
         <SearchHeader
           activeTab={activeTab}
           query={searchQuery}
@@ -59,14 +64,17 @@ export default function HomeScreen({
           setQuery={setSearchQuery}
           setScreen={setScreen}
         />
-        <PromoBanner />
+        <PromoBanner onPress={() => openCategory(categorySections[0].tiles[0])} />
+        <QuickActions setScreen={setScreen} />
         {showCategories ? <CategoryGrid sections={categorySections} openCategory={openCategory} /> : null}
         <ProductShelf
           title={shelfTitle}
           actionLabel="See all"
           products={featured}
           addToCart={addToCart}
+          getQuantity={getQuantity}
           openProduct={openProduct}
+          removeFromCart={removeFromCart}
         />
         {dealProducts.length ? (
           <ProductShelf
@@ -75,9 +83,21 @@ export default function HomeScreen({
             actionLabel="Deals"
             products={dealProducts}
             addToCart={addToCart}
+            getQuantity={getQuantity}
             openProduct={openProduct}
+            removeFromCart={removeFromCart}
           />
         ) : null}
+        <ProductShelf
+          horizontal
+          title="Full Amazon Now catalog"
+          actionLabel={`${fullCatalog.length} items`}
+          products={fullCatalog}
+          addToCart={addToCart}
+          getQuantity={getQuantity}
+          openProduct={openProduct}
+          removeFromCart={removeFromCart}
+        />
       </ScrollView>
     </View>
   );

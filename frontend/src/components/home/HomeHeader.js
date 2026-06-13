@@ -3,7 +3,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../theme/colors";
 
-export default function HomeHeader({ setScreen }) {
+export default function HomeHeader({ customer, setScreen }) {
+  const initial = customer.name?.trim()?.[0]?.toUpperCase() || "A";
+
   return (
     <View style={styles.header}>
       <View>
@@ -11,7 +13,7 @@ export default function HomeHeader({ setScreen }) {
         <Text numberOfLines={1} style={styles.location}>Home - Shivani Srivastava</Text>
       </View>
       <Pressable onPress={() => setScreen("profile")} style={styles.profileButton}>
-        <Ionicons name="person-circle-outline" size={34} color={colors.amazonBlue} />
+        <Text style={styles.initial}>{initial}</Text>
       </Pressable>
     </View>
   );
@@ -45,5 +47,10 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: "center",
     width: 40
+  },
+  initial: {
+    color: colors.amazonBlue,
+    fontSize: 17,
+    fontWeight: "900"
   }
 });

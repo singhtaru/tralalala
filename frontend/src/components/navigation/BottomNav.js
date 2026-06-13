@@ -23,7 +23,7 @@ export default function BottomNav({ active, cartCount, setScreen }) {
         return (
           <Pressable
             key={item.id}
-            onPress={() => setScreen(item.id === "reorder" ? "home" : item.id)}
+            onPress={() => setScreen(item.id)}
             style={styles.navItem}
           >
             {item.library === "material" ? (

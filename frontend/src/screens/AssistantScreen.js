@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-
 import ProductCard from "../components/catalog/ProductCard";
 import ScreenTopBar from "../components/common/ScreenTopBar";
 import { products } from "../data/products";
+import { detectIntent } from "../data/intentEngine";
 import { colors } from "../theme/colors";
 
 const suggestions = [
@@ -14,14 +15,19 @@ const suggestions = [
 
 export default function AssistantScreen({
   addToCart,
+  addGeneratedCart,
+  getQuantity,
   goBack,
   openProduct,
   query,
+  removeFromCart,
   setQuery
 }) {
   const [submittedQuery, setSubmittedQuery] = useState(query);
+  const intent = useMemo(() => detectIntent(submittedQuery), [submittedQuery]);
 
   const results = useMemo(() => {
+    if (intent) return intent.products;
     const text = submittedQuery.toLowerCase();
 
     if (text.includes("party") || text.includes("guest")) {
@@ -43,7 +49,7 @@ export default function AssistantScreen({
     return products.filter((item) =>
       `${item.name} ${item.category} ${item.tag}`.toLowerCase().includes(text)
     );
-  }, [submittedQuery]);
+  }, [intent, submittedQuery]);
 
   const submit = (text = query) => {
     setQuery(text);
@@ -66,11 +72,13 @@ export default function AssistantScreen({
 
         <View style={styles.inputRow}>
           <TextInput
+            autoCorrect
             value={query}
             onChangeText={setQuery}
             onSubmitEditing={() => submit()}
             placeholder="Example: I have a party"
             returnKeyType="search"
+            textContentType="none"
             style={styles.input}
           />
           <Pressable onPress={() => submit()} style={styles.sendButton}>
@@ -87,9 +95,25 @@ export default function AssistantScreen({
         </View>
 
         {submittedQuery ? (
-          <Text style={styles.resultTitle}>
-            {results.length ? `Suggestions for "${submittedQuery}"` : "No matching products yet"}
-          </Text>
+          intent ? (
+            <View style={styles.intentCard}>
+              <Text style={styles.intentBadge}>
+                {["injury", "fever", "baby", "power"].includes(intent.id) ? "EMERGENCY DETECTED" : "INTENT DETECTED"}
+              </Text>
+              <Text style={styles.intentTitle}>{intent.message}</Text>
+              <Text style={styles.intentText}>I generated a {results.length}-item cart. Accept it or modify the items below.</Text>
+              <Pressable
+                onPress={() => addGeneratedCart(results, ["injury", "fever", "baby", "power"].includes(intent.id))}
+                style={styles.acceptButton}
+              >
+                <Text style={styles.acceptText}>Accept generated cart</Text>
+              </Pressable>
+            </View>
+          ) : (
+            <Text style={styles.resultTitle}>
+              {results.length ? `Suggestions for "${submittedQuery}"` : "No matching products yet"}
+            </Text>
+          )
         ) : null}
 
         <View style={styles.productGrid}>
@@ -98,7 +122,9 @@ export default function AssistantScreen({
               key={product.id}
               product={product}
               recommended={index === 0}
-              onAdd={() => addToCart(product)}
+              quantity={getQuantity(product.id)}
+              onDecrement={() => removeFromCart(product)}
+              onIncrement={() => addToCart(product)}
               onPress={() => openProduct(product)}
             />
           ))}
@@ -195,6 +221,19 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginTop: 20
   },
+  intentCard: {
+    backgroundColor: "#eef8ff",
+    borderColor: "#c9e6f7",
+    borderRadius: 8,
+    borderWidth: 1,
+    marginTop: 18,
+    padding: 14
+  },
+  intentBadge: { color: "#b42318", fontSize: 10, fontWeight: "900" },
+  intentTitle: { color: colors.ink, fontSize: 18, fontWeight: "900", marginTop: 5 },
+  intentText: { color: colors.muted, fontSize: 12, fontWeight: "700", lineHeight: 18, marginTop: 4 },
+  acceptButton: { alignItems: "center", backgroundColor: colors.amazonOrange, borderRadius: 7, marginTop: 12, padding: 11 },
+  acceptText: { color: colors.amazonBlue, fontSize: 13, fontWeight: "900" },
   productGrid: {
     flexDirection: "row",
     flexWrap: "wrap",

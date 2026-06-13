@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import ScreenTopBar from "../components/common/ScreenTopBar";
 import { colors } from "../theme/colors";
+
+const deliveryFee = 19;
+const handlingFee = 6;
+const discount = 25;
 
 const paymentOptions = [
   {
@@ -27,35 +31,43 @@ const paymentOptions = [
   }
 ];
 
-export default function PaymentScreen({ goBack, paymentMethod, setPaymentMethod, total }) {
-  const [placed, setPlaced] = useState(false);
-
-  if (placed) {
-    return (
-      <View style={styles.successScreen}>
-        <View style={styles.successIcon}>
-          <Ionicons name="checkmark" size={40} color="#ffffff" />
-        </View>
-        <Text style={styles.successTitle}>Order placed</Text>
-        <Text style={styles.successText}>
-          Your order is confirmed and will arrive in 10-15 minutes.
-        </Text>
-        <Text style={styles.successMeta}>{paymentMethod} | INR {total}</Text>
-        <Pressable onPress={goBack} style={styles.doneButton}>
-          <Text style={styles.doneText}>View Cart</Text>
-        </Pressable>
-      </View>
-    );
-  }
+export default function PaymentScreen({
+  cart,
+  goBack,
+  onPlaceOrder,
+  paymentMethod,
+  setPaymentMethod,
+  total
+}) {
+  const grandTotal = Math.max(0, total + deliveryFee + handlingFee - discount);
 
   return (
     <View style={styles.screen}>
-      <ScreenTopBar title="Choose payment" subtitle={`Pay INR ${total}`} goBack={goBack} />
+      <ScreenTopBar title="Review bill" subtitle="Order will be placed immediately" goBack={goBack} />
       <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.billCard}>
+          <Text style={styles.cardTitle}>Bill details</Text>
+          {cart.map((item) => (
+            <View key={item.id} style={styles.itemRow}>
+              <View style={styles.itemDot} />
+              <Text numberOfLines={1} style={styles.itemName}>{item.qty} x {item.name}</Text>
+              <Text style={styles.itemPrice}>INR {item.price * item.qty}</Text>
+            </View>
+          ))}
+          <BillRow label="Item total" value={`INR ${total}`} />
+          <BillRow label="Delivery partner fee" value={`INR ${deliveryFee}`} />
+          <BillRow label="Handling fee" value={`INR ${handlingFee}`} />
+          <BillRow label="Amazon Now coupon" value={`- INR ${discount}`} green />
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>To pay</Text>
+            <Text style={styles.totalValue}>INR {grandTotal}</Text>
+          </View>
+        </View>
+
         <View style={styles.walletSummary}>
           <MaterialCommunityIcons name="wallet-outline" size={27} color={colors.amazonBlue} />
           <View style={styles.walletCopy}>
-            <Text style={styles.walletTitle}>Amazon Wallet</Text>
+            <Text style={styles.walletTitle}>Amazon Wallet synced</Text>
             <Text style={styles.walletBalance}>Balance INR 1,250</Text>
           </View>
         </View>
@@ -89,31 +101,118 @@ export default function PaymentScreen({ goBack, paymentMethod, setPaymentMethod,
       </ScrollView>
       <View style={styles.payBar}>
         <View>
-          <Text style={styles.payLabel}>Payable amount</Text>
-          <Text style={styles.payTotal}>INR {total}</Text>
+          <Text style={styles.payLabel}>Place order for</Text>
+          <Text style={styles.payTotal}>INR {grandTotal}</Text>
         </View>
-        <Pressable onPress={() => setPlaced(true)} style={styles.payButton}>
-          <Text style={styles.payButtonText}>Pay Now</Text>
+        <Pressable onPress={onPlaceOrder} style={styles.payButton}>
+          <Text style={styles.payButtonText}>Checkout</Text>
         </Pressable>
       </View>
     </View>
   );
 }
 
+function BillRow({ label, value, green }) {
+  return (
+    <View style={styles.billRow}>
+      <Text style={styles.billLabel}>{label}</Text>
+      <Text style={[styles.billValue, green && styles.greenValue]}>{value}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: "#ffffff",
+    backgroundColor: colors.skyLight,
     flex: 1
   },
   content: {
     padding: 16,
     paddingBottom: 176
   },
+  billCard: {
+    backgroundColor: "#ffffff",
+    borderColor: "#d8eef5",
+    borderRadius: 12,
+    borderWidth: 1,
+    padding: 14
+  },
+  cardTitle: {
+    color: colors.ink,
+    fontSize: 20,
+    fontWeight: "900",
+    marginBottom: 10
+  },
+  itemRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    marginBottom: 9
+  },
+  itemDot: {
+    backgroundColor: colors.green,
+    borderRadius: 3,
+    height: 6,
+    marginRight: 8,
+    width: 6
+  },
+  itemName: {
+    color: colors.ink,
+    flex: 1,
+    fontSize: 13,
+    fontWeight: "800"
+  },
+  itemPrice: {
+    color: colors.ink,
+    fontSize: 13,
+    fontWeight: "900"
+  },
+  billRow: {
+    alignItems: "center",
+    borderTopColor: "#eef2f4",
+    borderTopWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 9
+  },
+  billLabel: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: "800"
+  },
+  billValue: {
+    color: colors.ink,
+    fontSize: 13,
+    fontWeight: "900"
+  },
+  greenValue: {
+    color: colors.green
+  },
+  totalRow: {
+    alignItems: "center",
+    borderTopColor: colors.stroke,
+    borderTopWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingTop: 12
+  },
+  totalLabel: {
+    color: colors.ink,
+    fontSize: 17,
+    fontWeight: "900"
+  },
+  totalValue: {
+    color: colors.ink,
+    fontSize: 20,
+    fontWeight: "900"
+  },
   walletSummary: {
     alignItems: "center",
-    backgroundColor: "#eef8ff",
-    borderRadius: 8,
+    backgroundColor: "#ffffff",
+    borderColor: "#d8eef5",
+    borderRadius: 12,
+    borderWidth: 1,
     flexDirection: "row",
+    marginTop: 14,
     padding: 14
   },
   walletCopy: {
@@ -139,6 +238,7 @@ const styles = StyleSheet.create({
   },
   option: {
     alignItems: "center",
+    backgroundColor: "#ffffff",
     borderColor: colors.stroke,
     borderRadius: 8,
     borderWidth: 1,
@@ -196,53 +296,6 @@ const styles = StyleSheet.create({
   },
   payButtonText: {
     color: "#ffffff",
-    fontSize: 15,
-    fontWeight: "900"
-  },
-  successScreen: {
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-    flex: 1,
-    justifyContent: "center",
-    padding: 28
-  },
-  successIcon: {
-    alignItems: "center",
-    backgroundColor: colors.green,
-    borderRadius: 38,
-    height: 76,
-    justifyContent: "center",
-    width: 76
-  },
-  successTitle: {
-    color: colors.ink,
-    fontSize: 28,
-    fontWeight: "900",
-    marginTop: 18
-  },
-  successText: {
-    color: colors.muted,
-    fontSize: 15,
-    fontWeight: "700",
-    lineHeight: 22,
-    marginTop: 8,
-    textAlign: "center"
-  },
-  successMeta: {
-    color: "#007185",
-    fontSize: 14,
-    fontWeight: "900",
-    marginTop: 16
-  },
-  doneButton: {
-    backgroundColor: colors.amazonOrange,
-    borderRadius: 8,
-    marginTop: 24,
-    paddingHorizontal: 30,
-    paddingVertical: 14
-  },
-  doneText: {
-    color: colors.ink,
     fontSize: 15,
     fontWeight: "900"
   }

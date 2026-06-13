@@ -18,6 +18,7 @@ export default function SearchHeader({
         <TextInput
           value={query}
           onChangeText={setQuery}
+          onFocus={() => setScreen("search")}
           placeholder="Search for atta, dal, coke and..."
           placeholderTextColor={colors.ink}
           style={styles.searchInput}
@@ -35,7 +36,7 @@ export default function SearchHeader({
           <Pressable key={tab.id} onPress={() => setActiveTab(tab.id)} style={styles.tabItem}>
             <MaterialCommunityIcons
               name={tab.icon}
-              size={28}
+              size={22}
               color={activeTab === tab.id ? colors.amazonOrange : "#20242a"}
             />
             <Text style={[styles.tabText, activeTab === tab.id && styles.tabTextActive]}>{tab.label}</Text>
@@ -87,17 +88,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8
   },
   tabRow: {
-    gap: 20,
-    paddingTop: 18
+    gap: 12,
+    paddingTop: 12
   },
   tabItem: {
     alignItems: "center",
-    minHeight: 66,
-    minWidth: 66
+    minHeight: 52,
+    minWidth: 58
   },
   tabText: {
     color: "#272c33",
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "800",
     marginTop: 5
   },
@@ -110,6 +111,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: 4,
     position: "absolute",
-    width: 52
+    width: 42
   }
 });

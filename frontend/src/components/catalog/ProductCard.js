@@ -1,7 +1,17 @@
 import React from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import ProductImage from "./ProductImage";
 
-export default function ProductCard({ product, compact, recommended, onAdd, onPress }) {
+export default function ProductCard({
+  product,
+  compact,
+  recommended,
+  quantity = 0,
+  onDecrement,
+  onIncrement,
+  onPress
+}) {
   const discount = product.mrp > product.price
     ? Math.round(((product.mrp - product.price) / product.mrp) * 100)
     : 0;
@@ -17,7 +27,7 @@ export default function ProductCard({ product, compact, recommended, onAdd, onPr
     >
       <View style={styles.imageWrap}>
         {product.tag ? <Text style={styles.ribbon}>{product.tag}</Text> : null}
-        <Image source={{ uri: product.image }} style={styles.image} />
+        <ProductImage product={product} style={styles.image} />
       </View>
       <View style={styles.body}>
         <Text style={styles.quantity}>{product.quantity}</Text>
@@ -29,10 +39,22 @@ export default function ProductCard({ product, compact, recommended, onAdd, onPr
         <Text numberOfLines={2} style={styles.name}>{product.name}</Text>
         <Text style={styles.meta}>{product.deliveryMins} mins  |  {product.rating} star</Text>
         {recommended ? <Text style={styles.ai}>AI recommended</Text> : null}
-        {onAdd ? (
-          <Pressable onPress={onAdd} style={styles.addButton}>
-            <Text style={styles.addText}>ADD</Text>
-          </Pressable>
+        {onIncrement ? (
+          quantity > 0 ? (
+            <View style={styles.stepper}>
+              <Pressable onPress={onDecrement} style={styles.stepButton}>
+                <Ionicons name="remove" size={18} color="#ffffff" />
+              </Pressable>
+              <Text style={styles.stepCount}>{quantity}</Text>
+              <Pressable onPress={onIncrement} style={styles.stepButton}>
+                <Ionicons name="add" size={18} color="#ffffff" />
+              </Pressable>
+            </View>
+          ) : (
+            <Pressable onPress={onIncrement} style={styles.addButton}>
+              <Text style={styles.addText}>ADD</Text>
+            </Pressable>
+          )
         ) : null}
       </View>
     </Pressable>
@@ -146,6 +168,27 @@ const styles = StyleSheet.create({
   addText: {
     color: "#148028",
     fontSize: 13,
+    fontWeight: "900"
+  },
+  stepper: {
+    alignItems: "center",
+    backgroundColor: "#16852e",
+    borderRadius: 7,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+    minHeight: 36,
+    paddingHorizontal: 5
+  },
+  stepButton: {
+    alignItems: "center",
+    height: 30,
+    justifyContent: "center",
+    width: 30
+  },
+  stepCount: {
+    color: "#ffffff",
+    fontSize: 15,
     fontWeight: "900"
   }
 });
