@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "name": "Lays Chips",
+    "category": "snacks",
+    "price": 20
+  },
+  {
+    "id": 2,
+    "name": "Coke",
+    "category": "drinks",
+    "price": 40
+  },
+  {
+    "id": 3,
+    "name": "Maggi",
+    "category": "instant food",
+    "price": 30
+  },
+  {
+    "id": 4,
+    "name": "Doritos",
+    "category": "snacks",
+    "price": 50
+  },
+  {
+    "id": 5,
+    "name": "Butter Popcorn",
+    "category": "snacks",
+    "price": 80
+  },
+  {
+    "id": 6,
+    "name": "Nachos",
+    "category": "snacks",
+    "price": 60
+  },
+  {
+    "id": 7,
+    "name": "Sprite",
+    "category": "drinks",
+    "price": 35
+  },
+  {
+    "id": 8,
+    "name": "Chocolate Cookies",
+    "category": "snacks",
+    "price": 45
+  },
+  {
+    "id": 9,
+    "name": "Mixed Nuts",
+    "category": "snacks",
+    "price": 120
+  },
+  {
+    "id": 10,
+    "name": "Protein Bars",
+    "category": "snacks",
+    "price": 140
+  },
+  {
+    "id": 11,
+    "name": "Granola Bites",
+    "category": "snacks",
+    "price": 95
+  },
+  {
+    "id": 12,
+    "name": "Roasted Makhana",
+    "category": "snacks",
+    "price": 85
+  },
+  {
+    "id": 13,
+    "name": "Sparkling Water",
+    "category": "drinks",
+    "price": 60
+  },
+  {
+    "id": 14,
+    "name": "Orange Juice",
+    "category": "drinks",
+    "price": 70
+  },
+  {
+    "id": 15,
+    "name": "Instant Noodles Cup",
+    "category": "instant food",
+    "price": 45
+  },
+  {
+    "id": 16,
+    "name": "Pasta Cup",
+    "category": "instant food",
+    "price": 55
+  },
+  {
+    "id": 17,
+    "name": "Tomato Soup Cup",
+    "category": "instant food",
+    "price": 65
+  },
+  {
+    "id": 18,
+    "name": "Masala Oats",
+    "category": "instant food",
+    "price": 50
+  }
+]
