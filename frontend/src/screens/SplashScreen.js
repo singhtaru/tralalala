@@ -40,8 +40,8 @@ export default function SplashScreen({ onFinish }) {
       <Video
         ref={videoRef}
         source={require("../../assets/intro/amazon-now-logo-reveal.mp4")}
-        style={StyleSheet.absoluteFill}
-        resizeMode={ResizeMode.COVER}
+        style={styles.video}
+        resizeMode={ResizeMode.CONTAIN}
         shouldPlay
         isMuted={true} // Crucial for desktop/web browser autoplay support
         isLooping={false}
@@ -53,9 +53,13 @@ export default function SplashScreen({ onFinish }) {
 
 const styles = StyleSheet.create({
   splash: {
-    backgroundColor: "#131921",
+    backgroundColor: "#000000",
     flex: 1,
-    height: "100%",
-    width: "100%"
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  video: {
+    width: "100%",
+    height: "100%"
   }
 });
