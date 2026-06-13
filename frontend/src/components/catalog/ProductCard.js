@@ -30,14 +30,20 @@ export default function ProductCard({
         <ProductImage product={product} style={styles.image} />
       </View>
       <View style={styles.body}>
-        <Text style={styles.quantity}>{product.quantity}</Text>
+        <Text numberOfLines={2} style={styles.name}>{product.name}</Text>
+        {product.brand ? (
+          <Text style={styles.brand}>Brand: {product.brand}</Text>
+        ) : null}
         <View style={styles.priceRow}>
-          <Text style={styles.price}>INR {product.price}</Text>
-          {product.mrp > product.price ? <Text style={styles.mrp}>INR {product.mrp}</Text> : null}
+          <Text style={styles.price}>₹{product.price}</Text>
+          {product.mrp > product.price ? <Text style={styles.mrp}>₹{product.mrp}</Text> : null}
+        </View>
+        <View style={styles.ratingRow}>
+          <Text style={styles.ratingText}>⭐ {product.rating}</Text>
+          <Text style={styles.bullet}>•</Text>
+          <Text style={styles.deliveryText}>{product.deliveryMins} mins</Text>
         </View>
         {discount ? <Text style={styles.discount}>{discount}% off</Text> : null}
-        <Text numberOfLines={2} style={styles.name}>{product.name}</Text>
-        <Text style={styles.meta}>{product.deliveryMins} mins  |  {product.rating} star</Text>
         {recommended ? <Text style={styles.ai}>AI recommended</Text> : null}
         {onIncrement ? (
           quantity > 0 ? (
@@ -105,16 +111,17 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingBottom: 12
   },
-  quantity: {
-    color: "#2b2f36",
-    fontSize: 18,
-    fontWeight: "900"
+  brand: {
+    color: "#727782",
+    fontSize: 12,
+    fontWeight: "700",
+    marginTop: 2
   },
   priceRow: {
     alignItems: "center",
     flexDirection: "row",
     gap: 5,
-    marginTop: 4
+    marginTop: 5
   },
   price: {
     color: "#1f2937",
@@ -137,13 +144,27 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "800",
     lineHeight: 19,
-    marginTop: 5
+    marginTop: 2
   },
-  meta: {
+  ratingRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 4,
+    marginTop: 4
+  },
+  ratingText: {
+    color: "#282d35",
+    fontSize: 12,
+    fontWeight: "700"
+  },
+  bullet: {
+    color: "#a1a7b0",
+    fontSize: 12
+  },
+  deliveryText: {
     color: "#67707c",
     fontSize: 11,
-    fontWeight: "700",
-    marginTop: 6
+    fontWeight: "700"
   },
   ai: {
     alignSelf: "flex-start",

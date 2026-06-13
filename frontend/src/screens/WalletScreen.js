@@ -11,20 +11,20 @@ export default function WalletScreen({ deposit, goBack, setDeposit }) {
       <ScreenTopBar title="Amazon Now Wallet" subtitle="Emergency purchase protection" goBack={goBack} />
       <View style={styles.content}>
         <View style={styles.walletCard}>
-          <View><Text style={styles.balanceLabel}>Amazon Wallet</Text><Text style={styles.balance}>INR 120</Text></View>
+          <View><Text style={styles.balanceLabel}>Amazon Wallet</Text><Text style={styles.balance}>₹120</Text></View>
           <MaterialCommunityIcons name="wallet-outline" size={35} color={colors.amazonOrange} />
         </View>
         <View style={styles.depositCard}>
           <View style={styles.depositIcon}><Ionicons name="shield-checkmark" size={28} color="#ffffff" /></View>
           <Text style={styles.depositLabel}>Emergency deposit balance</Text>
-          <Text style={styles.depositBalance}>INR {deposit}</Text>
+          <Text style={styles.depositBalance}>₹{deposit}</Text>
           <Text style={styles.depositText}>Only used for emergency purchases when your Amazon Wallet balance is insufficient.</Text>
         </View>
         <Text style={styles.title}>Choose emergency deposit</Text>
         <View style={styles.options}>
           {[500, 1000, 2000].map((amount) => (
             <Pressable key={amount} onPress={() => setSelected(amount)} style={[styles.option, selected === amount && styles.optionSelected]}>
-              <Text style={[styles.optionText, selected === amount && styles.optionTextSelected]}>INR {amount}</Text>
+              <Text style={[styles.optionText, selected === amount && styles.optionTextSelected]}>₹{amount}</Text>
             </Pressable>
           ))}
         </View>

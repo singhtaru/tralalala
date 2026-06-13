@@ -17,24 +17,48 @@ import EmergencyScreen from "./src/screens/EmergencyScreen";
 import WalletScreen from "./src/screens/WalletScreen";
 import TrackingScreen from "./src/screens/TrackingScreen";
 import OrderAgainScreen from "./src/screens/OrderAgainScreen";
+import OnboardingScreen from "./src/screens/OnboardingScreen";
+import UserSetupScreen from "./src/screens/UserSetupScreen";
+import AddressFormScreen from "./src/screens/AddressFormScreen";
+import ManageAddressesScreen from "./src/screens/ManageAddressesScreen";
+import AddFundsScreen from "./src/screens/AddFundsScreen";
+import GooglePayScreen from "./src/screens/GooglePayScreen";
 import IosKeyboard from "./src/components/common/IosKeyboard";
 import IosNotification from "./src/components/common/IosNotification";
 import { products } from "./src/data/products";
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const [isOnboarded, setIsOnboarded] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authStep, setAuthStep] = useState("email"); // "email" or "otp"
   const [email, setEmail] = useState("");
+  
+  // Profile Setup states
+  const [customer, setCustomer] = useState(null); // setup on UserSetupScreen
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [addressToEdit, setAddressToEdit] = useState(null);
+
   const [screen, setScreen] = useState("home");
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(products[0]);
   const [cart, setCart] = useState([]);
+  
+  // Wallet Balances
+  const [walletBalance, setWalletBalance] = useState(700);
+  const [emergencyDeposit, setEmergencyDeposit] = useState(0); // Active only after onboarding payment success
   const [paymentMethod, setPaymentMethod] = useState("Google Pay");
-  const [deposit, setDeposit] = useState(1000);
   const [recentSearches, setRecentSearches] = useState(["coke", "atta", "milk"]);
+  const [orderHistory, setOrderHistory] = useState([]);
+  const [checkoutDeficit, setCheckoutDeficit] = useState(0);
+
+  // Google Pay specific states
+  const [gpayAmount, setGpayAmount] = useState(0);
+  const [gpayFlow, setGpayFlow] = useState("recharge"); // "recharge", "onboarding", "checkout"
+  const [tempOnboardingData, setTempOnboardingData] = useState(null);
 
   // SMS simulated state
   const [smsNotification, setSmsNotification] = useState({
@@ -74,12 +98,12 @@ export default function App() {
     setKeyboard((prev) => ({ ...prev, visible: false }));
   };
 
-  // Trigger SMS Arrival
-  const triggerSms = () => {
+  // Trigger visual notification popup
+  const triggerNotification = (title, body) => {
     setSmsNotification({
       visible: true,
-      title: "Amazon Now",
-      body: "Your verification code is: 123456"
+      title: title,
+      body: body
     });
   };
 
@@ -128,12 +152,134 @@ export default function App() {
     [cart]
   );
 
+  const handlePlaceOrder = (method) => {
+    const grandTotal = Math.max(0, total + 19 + 6 - 25);
+    
+    if (method === "Google Pay") {
+      setGpayAmount(grandTotal);
+      setGpayFlow("checkout");
+      setScreen("google_pay");
+      return;
+    }
+
+    // Deduct standard balance or emergency deposit
+    if (method === "Amazon Wallet") {
+      setWalletBalance((prev) => Math.max(0, prev - grandTotal));
+    } else if (method === "Emergency Deposit") {
+      setEmergencyDeposit((prev) => Math.max(0, prev - grandTotal));
+    }
+
+    // Add to history
+    const newOrder = {
+      id: "ord_" + Date.now(),
+      date: "Delivered just now",
+      price: grandTotal,
+      itemsText: cart.map(item => `${item.qty} x ${item.name}`).join(", "),
+      items: [...cart]
+    };
+    setOrderHistory((prev) => [newOrder, ...prev]);
+
+    setPaymentMethod(method);
+    setScreen("tracking");
+  };
+
+  const handleReorderPastItems = (items) => {
+    setCart(items.map(item => ({ ...item, qty: 1 })));
+    setScreen("cart");
+  };
+
+  const handleGoBackFromTracking = () => {
+    setCart([]);
+    setScreen("home");
+  };
+
+  // Address CRUD Handlers
+  const handleSaveAddress = (address) => {
+    setAddresses((prev) => {
+      const exists = prev.find((x) => x.id === address.id);
+      let updated;
+      if (exists) {
+        updated = prev.map((x) => (x.id === address.id ? address : x));
+      } else {
+        updated = [...prev, address];
+      }
+      // Set active default address
+      if (address.isDefault || prev.length === 0) {
+        setSelectedAddress(address);
+      }
+      return updated;
+    });
+    setScreen("manage_addresses");
+  };
+
+  const handleDeleteAddress = (id) => {
+    setAddresses((prev) => {
+      const filtered = prev.filter((x) => x.id !== id);
+      if (selectedAddress?.id === id) {
+        setSelectedAddress(filtered[0] || null);
+      }
+      return filtered;
+    });
+  };
+
+  // Google Pay recharge handlers
+  const handleGooglePaySuccess = (amount) => {
+    if (gpayFlow === "onboarding") {
+      if (tempOnboardingData) {
+        setCustomer(tempOnboardingData.customer);
+        setAddresses([tempOnboardingData.address]);
+        setSelectedAddress(tempOnboardingData.address);
+        setEmergencyDeposit(tempOnboardingData.deposit);
+        setTempOnboardingData(null);
+      }
+      setGpayFlow("recharge");
+      setScreen("home");
+      triggerNotification("Emergency Deposit", `₹${amount} emergency deposit added successfully!`);
+    } else if (gpayFlow === "checkout") {
+      const grandTotal = amount;
+      const newOrder = {
+        id: "ord_" + Date.now(),
+        date: "Delivered just now",
+        price: grandTotal,
+        itemsText: cart.map(item => `${item.qty} x ${item.name}`).join(", "),
+        items: [...cart]
+      };
+      setOrderHistory((prev) => [newOrder, ...prev]);
+      setPaymentMethod("Google Pay");
+      setGpayFlow("recharge");
+      setScreen("tracking");
+      triggerNotification("Order Confirmed", `₹${grandTotal} paid successfully using Google Pay.`);
+    } else {
+      setWalletBalance((prev) => prev + amount);
+      setGpayFlow("recharge");
+      setScreen("payment");
+      triggerNotification("Google Pay", `₹${amount} recharged successfully to your Wallet!`);
+    }
+  };
+
+  const handleGooglePayCancel = () => {
+    if (gpayFlow === "onboarding") {
+      setTempOnboardingData(null);
+      setGpayFlow("recharge");
+      // Stay on UserSetupScreen by leaving customer null, set screen back
+      setScreen("setup");
+    } else if (gpayFlow === "checkout") {
+      setGpayFlow("recharge");
+      setScreen("payment");
+    } else {
+      setGpayFlow("recharge");
+      setScreen("add_funds");
+    }
+  };
+
   return (
     <AppShell>
       <StatusBar barStyle="dark-content" />
       <View style={[styles.mainContainer, { paddingBottom: keyboard.visible ? 280 : 0 }]}>
         {showSplash ? (
           <SplashScreen onFinish={() => setShowSplash(false)} />
+        ) : !isOnboarded ? (
+          <OnboardingScreen onFinish={() => setIsOnboarded(true)} />
         ) : !isAuthenticated ? (
           authStep === "email" ? (
             <AuthEmailScreen
@@ -152,14 +298,32 @@ export default function App() {
               onBack={() => setAuthStep("email")}
               onVerified={() => {
                 setIsAuthenticated(true);
-                setScreen("home");
               }}
               focusInput={focusInput}
               updateKeyboardValue={updateKeyboardValue}
               hideKeyboard={hideKeyboard}
-              triggerSms={triggerSms}
+              triggerSms={() => triggerNotification("Amazon Now", "Your verification code is: 123456")}
             />
           )
+        ) : (gpayFlow === "onboarding" && screen === "google_pay") ? (
+          <GooglePayScreen
+            amount={gpayAmount}
+            flow={gpayFlow}
+            onSuccess={handleGooglePaySuccess}
+            onCancel={handleGooglePayCancel}
+          />
+        ) : !customer ? (
+          <UserSetupScreen
+            focusInput={focusInput}
+            updateKeyboardValue={updateKeyboardValue}
+            hideKeyboard={hideKeyboard}
+            onComplete={(data) => {
+              setTempOnboardingData(data);
+              setGpayAmount(data.deposit);
+              setGpayFlow("onboarding");
+              setScreen("google_pay");
+            }}
+          />
         ) : (
           <>
             {screen === "home" && (
@@ -167,7 +331,7 @@ export default function App() {
                 activeTab={activeTab}
                 addToCart={addToCart}
                 cartCount={cart.length}
-                customer={{ name: "Shivi" }}
+                customer={customer}
                 getQuantity={getQuantity}
                 openCategory={openCategory}
                 openProduct={openProduct}
@@ -176,6 +340,7 @@ export default function App() {
                 setActiveTab={setActiveTab}
                 setSearchQuery={setSearchQuery}
                 setScreen={setScreen}
+                onReorderPastItems={handleReorderPastItems}
               />
             )}
             {screen === "category" && (
@@ -210,30 +375,31 @@ export default function App() {
               <PaymentScreen
                 cart={cart}
                 goBack={() => setScreen("cart")}
-                onPlaceOrder={() => setScreen("tracking")}
+                onPlaceOrder={handlePlaceOrder}
                 paymentMethod={paymentMethod}
                 setPaymentMethod={setPaymentMethod}
                 total={total}
+                walletBalance={walletBalance}
+                emergencyDeposit={emergencyDeposit}
+                selectedAddress={selectedAddress}
+                onChangeAddress={() => setScreen("manage_addresses")}
+                onAddFunds={(deficit) => {
+                  setCheckoutDeficit(deficit);
+                  setScreen("add_funds");
+                }}
               />
             )}
             {screen === "assistant" && (
               <AssistantScreen
                 addToCart={addToCart}
                 addGeneratedCart={(items, isEmergency) => {
-                  setCart((prev) => {
-                    let next = [...prev];
-                    items.forEach((item) => {
-                      const existing = next.find((x) => x.id === item.id);
-                      if (!existing) {
-                        next.push({ ...item, qty: 1 });
-                      }
-                    });
-                    return next;
-                  });
+                  setCart(items.map(item => ({ ...item, qty: 1 })));
                   if (isEmergency) {
                     setPaymentMethod("Emergency Deposit");
+                  } else {
+                    setPaymentMethod("Amazon Wallet");
                   }
-                  setScreen("cart");
+                  setScreen("payment");
                 }}
                 getQuantity={getQuantity}
                 goBack={() => setScreen("home")}
@@ -250,14 +416,23 @@ export default function App() {
             )}
             {screen === "profile" && (
               <ProfileScreen
-                customer={{ name: "Shivi" }}
+                customer={customer}
+                addresses={addresses}
+                orderHistory={orderHistory}
+                walletBalance={walletBalance}
                 goBack={() => setScreen("home")}
                 onSignOut={() => {
                   setIsAuthenticated(false);
                   setAuthStep("email");
                   setEmail("");
+                  setCustomer(null);
+                  setAddresses([]);
+                  setSelectedAddress(null);
                   setCart([]);
                 }}
+                onManageAddresses={() => setScreen("manage_addresses")}
+                onManageWallet={() => setScreen("wallet")}
+                onReorderPastItems={handleReorderPastItems}
               />
             )}
             {screen === "search" && (
@@ -294,43 +469,87 @@ export default function App() {
                 openProduct={openProduct}
                 removeFromCart={removeFromCart}
                 addGeneratedCart={(items, isEmergency) => {
-                  setCart((prev) => {
-                    let next = [...prev];
-                    items.forEach((item) => {
-                      const existing = next.find((x) => x.id === item.id);
-                      if (!existing) {
-                        next.push({ ...item, qty: 1 });
-                      }
-                    });
-                    return next;
-                  });
+                  setCart(items.map(item => ({ ...item, qty: 1 })));
                   if (isEmergency) {
                     setPaymentMethod("Emergency Deposit");
+                  } else {
+                    setPaymentMethod("Amazon Wallet");
                   }
-                  setScreen("cart");
+                  setScreen("payment");
                 }}
               />
             )}
             {screen === "wallet" && (
               <WalletScreen
-                deposit={deposit}
-                goBack={() => setScreen("home")}
+                deposit={emergencyDeposit}
+                goBack={() => setScreen("profile")}
                 setDeposit={(amount) => {
-                  setDeposit(amount);
-                  setScreen("home");
+                  setEmergencyDeposit(amount);
+                  setScreen("profile");
                 }}
               />
             )}
             {screen === "tracking" && (
               <TrackingScreen
                 cart={cart}
-                goBack={() => setScreen("home")}
+                goBack={handleGoBackFromTracking}
                 paymentMethod={paymentMethod}
                 setPaymentMethod={setPaymentMethod}
                 total={total}
+                selectedAddress={selectedAddress}
+                triggerGlobalNotification={triggerNotification}
               />
             )}
-            {!["payment", "assistant", "tracking", "search"].includes(screen) ? (
+            {screen === "manage_addresses" && (
+              <ManageAddressesScreen
+                addresses={addresses}
+                selectedAddress={selectedAddress}
+                onSelectAddress={(addr) => {
+                  setSelectedAddress(addr);
+                  setScreen("payment");
+                }}
+                onAddAddress={() => {
+                  setAddressToEdit(null);
+                  setScreen("address_form");
+                }}
+                onEditAddress={(addr) => {
+                  setAddressToEdit(addr);
+                  setScreen("address_form");
+                }}
+                onDeleteAddress={handleDeleteAddress}
+                goBack={() => setScreen("payment")}
+              />
+            )}
+            {screen === "address_form" && (
+              <AddressFormScreen
+                addressToEdit={addressToEdit}
+                focusInput={focusInput}
+                updateKeyboardValue={updateKeyboardValue}
+                hideKeyboard={hideKeyboard}
+                onSave={handleSaveAddress}
+                goBack={() => setScreen("manage_addresses")}
+              />
+            )}
+            {screen === "add_funds" && (
+              <AddFundsScreen
+                deficitAmount={checkoutDeficit}
+                onSelectGooglePay={(amt) => {
+                  setGpayAmount(amt);
+                  setGpayFlow("recharge");
+                  setScreen("google_pay");
+                }}
+                goBack={() => setScreen("payment")}
+              />
+            )}
+            {screen === "google_pay" && (
+              <GooglePayScreen
+                amount={gpayAmount}
+                flow={gpayFlow}
+                onSuccess={handleGooglePaySuccess}
+                onCancel={handleGooglePayCancel}
+              />
+            )}
+            {!["payment", "assistant", "tracking", "search", "google_pay", "add_funds", "address_form", "manage_addresses"].includes(screen) ? (
               <BottomNav active={screen} cartCount={cart.length} setScreen={setScreen} />
             ) : null}
           </>

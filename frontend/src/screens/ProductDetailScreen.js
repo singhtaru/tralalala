@@ -21,6 +21,11 @@ export default function ProductDetailScreen({
       if (alternative === "Lower Cost") return a.price - b.price;
       if (alternative === "Faster Delivery") return a.deliveryMins - b.deliveryMins;
       if (alternative === "Premium Quality") return b.price - a.price;
+      if (alternative === "Higher Protein") {
+        const isProteinRich = (x) => ["dairy", "meat", "health"].includes(x.category);
+        if (isProteinRich(a) && !isProteinRich(b)) return -1;
+        if (!isProteinRich(a) && isProteinRich(b)) return 1;
+      }
       return b.rating - a.rating;
     });
     return sorted.slice(0, 6);
@@ -35,10 +40,13 @@ export default function ProductDetailScreen({
         </View>
         <Text style={styles.quantity}>{product.quantity}</Text>
         <Text style={styles.name}>{product.name}</Text>
-        <Text style={styles.meta}>{product.rating} star | {product.deliveryMins} mins | {product.unit}</Text>
+        {product.brand ? (
+          <Text style={styles.brandText}>Brand: {product.brand}</Text>
+        ) : null}
+        <Text style={styles.meta}>⭐ {product.rating}  |  {product.deliveryMins} mins</Text>
         <View style={styles.priceRow}>
-          <Text style={styles.price}>INR {product.price}</Text>
-          {product.mrp ? <Text style={styles.mrp}>MRP INR {product.mrp}</Text> : null}
+          <Text style={styles.price}>₹{product.price}</Text>
+          {product.mrp ? <Text style={styles.mrp}>MRP ₹{product.mrp}</Text> : null}
         </View>
         <View style={styles.reasonBox}>
           <Text style={styles.reasonTitle}>Why this is recommended</Text>
@@ -61,7 +69,7 @@ export default function ProductDetailScreen({
         )}
         <Text style={styles.sectionTitle}>Smart alternatives</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filters}>
-          {["Lower Cost", "Faster Delivery", "Premium Quality", "Best Seller"].map((filter) => (
+          {["Lower Cost", "Higher Protein", "Faster Delivery", "Premium Quality", "Best Seller"].map((filter) => (
             <Pressable key={filter} onPress={() => setAlternative(filter)} style={[styles.filter, alternative === filter && styles.filterActive]}>
               <Text style={[styles.filterText, alternative === filter && styles.filterTextActive]}>{filter}</Text>
             </Pressable>
@@ -120,6 +128,13 @@ const styles = StyleSheet.create({
     lineHeight: 34,
     marginHorizontal: 18,
     marginTop: 5
+  },
+  brandText: {
+    color: "#67707c",
+    fontSize: 16,
+    fontWeight: "700",
+    marginHorizontal: 18,
+    marginTop: 4
   },
   meta: {
     color: colors.muted,

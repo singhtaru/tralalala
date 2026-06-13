@@ -3,36 +3,24 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors } from "../theme/colors";
 
-const quickCards = [
-  { title: "Your\nOrders", icon: "bag-handle-outline" },
-  { title: "Help &\nSupport", icon: "chatbubbles-outline" },
-  { title: "Your\nWishlist", icon: "heart-outline" }
-];
-
-const infoRows = [
-  { title: "Your Refunds", icon: "cash-outline" },
-  { title: "Your Wishlist", icon: "heart-outline" },
-  { title: "E-Gift Cards", icon: "card-outline" },
-  { title: "Help & Support", icon: "chatbubbles-outline" },
-  { title: "Saved Addresses", subtitle: "3 Addresses", icon: "location-outline" },
-  { title: "Profile", icon: "person-circle-outline" },
-  { title: "Rewards", icon: "gift-outline" },
-  { title: "Payment Management", icon: "wallet-outline" }
-];
-
-const otherRows = [
-  { title: "Change App Icon", icon: "alpha-z-box-outline", library: "material" },
-  { title: "Suggest Products", icon: "sparkles-outline" },
-  { title: "Notifications", icon: "notifications-outline" },
-  { title: "General Info", icon: "information-circle-outline" }
-];
-
-export default function ProfileScreen({ customer, goBack, onSignOut }) {
+export default function ProfileScreen({
+  customer,
+  addresses = [],
+  orderHistory = [],
+  walletBalance = 120,
+  goBack,
+  onSignOut,
+  onManageAddresses,
+  onManageWallet,
+  onReorderPastItems
+}) {
   const name = customer?.name || "Shivi";
+  const phone = customer?.phone || "62993 36649";
   const initial = name.trim()[0]?.toUpperCase() || "S";
 
   return (
     <View style={styles.screen}>
+      {/* Header */}
       <View style={styles.header}>
         <Pressable onPress={goBack} style={styles.backButton}>
           <Ionicons name="chevron-back" size={26} color={colors.ink} />
@@ -41,82 +29,101 @@ export default function ProfileScreen({ customer, goBack, onSignOut }) {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+        {/* Profile Hero card */}
         <View style={styles.profileHero}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>{initial}</Text>
           </View>
           <View>
             <Text style={styles.name}>{name}</Text>
-            <Text style={styles.phone}>62993 36649</Text>
+            <Text style={styles.phone}>{phone}</Text>
+            <Text style={styles.email}>shivi@amazon.com</Text>
           </View>
         </View>
 
-        <View style={styles.quickRow}>
-          {quickCards.map((card) => (
-            <Pressable key={card.title} style={styles.quickCard}>
-              <Ionicons name={card.icon} size={29} color="#111827" />
-              <Text style={styles.quickText}>{card.title}</Text>
-            </Pressable>
-          ))}
-        </View>
-
+        {/* Amazon Pay Balance card */}
         <View style={styles.cashCard}>
           <View style={styles.cashTop}>
             <MaterialCommunityIcons name="wallet-giftcard" size={26} color="#9c1ee8" />
             <Text style={styles.cashTitle}>Amazon Pay & Gift Card</Text>
-            <Text style={styles.newBadge}>NEW</Text>
-            <Ionicons name="chevron-forward" size={22} color={colors.muted} />
+            <Pressable onPress={onManageWallet} style={styles.manageBtn}>
+              <Text style={styles.manageBtnText}>Manage</Text>
+            </Pressable>
           </View>
           <View style={styles.cashBottom}>
-            <Text style={styles.balanceLabel}>Available Balance</Text>
-            <Text style={styles.balance}>INR 0</Text>
-            <Pressable style={styles.balanceButton}>
-              <Text style={styles.balanceButtonText}>Add Balance</Text>
+            <View>
+              <Text style={styles.balanceLabel}>Available Balance</Text>
+              <Text style={styles.balance}>₹{walletBalance}</Text>
+            </View>
+            <Pressable onPress={onManageWallet} style={styles.balanceButton}>
+              <Text style={styles.balanceButtonText}>Recharge</Text>
             </Pressable>
           </View>
         </View>
 
-        <View style={styles.updateRow}>
-          <Ionicons name="settings-outline" size={33} color="#111827" />
-          <View style={styles.updateCopy}>
-            <Text style={styles.updateTitle}>Update Available</Text>
-            <Text style={styles.updateText}>Enjoy a more seamless shopping experience</Text>
-          </View>
-          <Text style={styles.newBadge}>New</Text>
-          <Ionicons name="chevron-forward" size={20} color="#e75c95" />
-        </View>
-
+        {/* Saved Addresses list links */}
         <Text style={styles.sectionTitle}>Your Information</Text>
         <View style={styles.listCard}>
-          {infoRows.map((row) => <ProfileRow key={row.title} row={row} />)}
+          <Pressable onPress={onManageAddresses} style={styles.infoRow}>
+            <Ionicons name="location-outline" size={25} color="#111827" />
+            <View style={styles.infoCopy}>
+              <Text style={styles.infoTitle}>Saved Addresses</Text>
+              <Text style={styles.infoSubtitle}>{addresses.length} address(es) saved</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#59616d" />
+          </Pressable>
+          
+          <Pressable onPress={onManageWallet} style={[styles.infoRow, { borderBottomWidth: 0 }]}>
+            <Ionicons name="wallet-outline" size={25} color="#111827" />
+            <View style={styles.infoCopy}>
+              <Text style={styles.infoTitle}>Payment Management</Text>
+              <Text style={styles.infoSubtitle}>Wallet, Emergency Deposit</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#59616d" />
+          </Pressable>
         </View>
 
-        <Text style={styles.sectionTitle}>Other Information</Text>
-        <View style={styles.listCard}>
-          {otherRows.map((row) => <ProfileRow key={row.title} row={row} />)}
-        </View>
+        {/* Order History list */}
+        <Text style={styles.sectionTitle}>Order History</Text>
+        {orderHistory.length === 0 ? (
+          <View style={styles.emptyOrdersCard}>
+            <Text style={styles.emptyOrdersText}>No orders placed yet.</Text>
+          </View>
+        ) : (
+          <View style={styles.ordersList}>
+            {orderHistory.map((order) => (
+              <View key={order.id} style={styles.orderCard}>
+                <View style={styles.orderCardHeader}>
+                  <View>
+                    <Text style={styles.orderId}>Order ID: #{order.id.slice(-5)}</Text>
+                    <Text style={styles.orderDate}>{order.date}</Text>
+                  </View>
+                  <Text style={styles.orderStatusBadge}>Delivered</Text>
+                </View>
+                
+                <Text style={styles.orderItemsText}>{order.itemsText}</Text>
+                
+                <View style={styles.orderCardFooter}>
+                  <Text style={styles.orderPrice}>Total: ₹{order.price}</Text>
+                  <Pressable
+                    onPress={() => onReorderPastItems && onReorderPastItems(order.items)}
+                    style={styles.reorderBtn}
+                  >
+                    <Text style={styles.reorderBtnText}>Buy Again</Text>
+                  </Pressable>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
 
+        {/* Sign Out */}
         <Pressable onPress={onSignOut} style={styles.logout}>
           <Text style={styles.logoutText}>Log Out</Text>
         </Pressable>
-        <Text style={styles.version}>App version 26.5.5</Text>
-        <Text style={styles.version}>v170-7</Text>
+        <Text style={styles.version}>App version 26.5.5 (Amazon Now Prototype)</Text>
       </ScrollView>
     </View>
-  );
-}
-
-function ProfileRow({ row }) {
-  const Icon = row.library === "material" ? MaterialCommunityIcons : Ionicons;
-  return (
-    <Pressable style={styles.infoRow}>
-      <Icon name={row.icon} size={27} color="#111827" />
-      <View style={styles.infoCopy}>
-        <Text style={styles.infoTitle}>{row.title}</Text>
-        {row.subtitle ? <Text style={styles.infoSubtitle}>{row.subtitle}</Text> : null}
-      </View>
-      <Ionicons name="chevron-forward" size={22} color="#59616d" />
-    </Pressable>
   );
 }
 
@@ -133,20 +140,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 16,
     paddingHorizontal: 18,
-    paddingVertical: 16
+    paddingVertical: 12
   },
   backButton: {
     alignItems: "center",
     borderColor: colors.stroke,
     borderRadius: 22,
     borderWidth: 1,
-    height: 44,
+    height: 40,
     justifyContent: "center",
-    width: 44
+    width: 40
   },
   headerTitle: {
     color: colors.ink,
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "900"
   },
   content: {
@@ -174,44 +181,26 @@ const styles = StyleSheet.create({
   },
   name: {
     color: "#111827",
-    fontSize: 25,
+    fontSize: 22,
     fontWeight: "900"
   },
   phone: {
     color: "#59616d",
     fontSize: 14,
     fontWeight: "700",
-    marginTop: 3
+    marginTop: 2
   },
-  quickRow: {
-    flexDirection: "row",
-    gap: 10
-  },
-  quickCard: {
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderColor: colors.stroke,
-    borderRadius: 8,
-    borderWidth: 1,
-    flex: 1,
-    minHeight: 114,
-    justifyContent: "center",
-    padding: 10
-  },
-  quickText: {
-    color: "#111827",
-    fontSize: 15,
-    fontWeight: "900",
-    lineHeight: 21,
-    marginTop: 9,
-    textAlign: "center"
+  email: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: "700"
   },
   cashCard: {
     backgroundColor: "#f5e8ff",
     borderColor: "#e0c5f6",
     borderRadius: 12,
     borderWidth: 1,
-    marginTop: 18,
+    marginTop: 10,
     padding: 14
   },
   cashTop: {
@@ -225,74 +214,54 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "900"
   },
-  newBadge: {
-    backgroundColor: "#22b981",
-    borderRadius: 4,
-    color: "#ffffff",
-    fontSize: 11,
-    fontWeight: "900",
-    overflow: "hidden",
-    paddingHorizontal: 6,
-    paddingVertical: 3
+  manageBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4
+  },
+  manageBtnText: {
+    color: "#8b22d8",
+    fontSize: 12,
+    fontWeight: "800"
   },
   cashBottom: {
     alignItems: "center",
     borderTopColor: "#e8d7f4",
     borderTopWidth: 1,
     flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 13,
     paddingTop: 13
   },
   balanceLabel: {
     color: "#8a8492",
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "700"
   },
   balance: {
     color: "#111827",
-    flex: 1,
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "900",
-    marginLeft: 10
+    marginTop: 2
   },
   balanceButton: {
     backgroundColor: "#ffffff",
+    borderColor: "#8b22d8",
     borderRadius: 8,
+    borderWidth: 1,
     paddingHorizontal: 14,
-    paddingVertical: 10
+    paddingVertical: 8
   },
   balanceButtonText: {
-    color: "#111827",
+    color: "#8b22d8",
     fontSize: 13,
     fontWeight: "900"
-  },
-  updateRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 26
-  },
-  updateCopy: {
-    flex: 1
-  },
-  updateTitle: {
-    color: "#111827",
-    fontSize: 16,
-    fontWeight: "900"
-  },
-  updateText: {
-    color: "#59616d",
-    fontSize: 13,
-    fontWeight: "700",
-    marginTop: 2
   },
   sectionTitle: {
     color: "#111827",
-    fontSize: 21,
+    fontSize: 18,
     fontWeight: "900",
     marginBottom: 12,
-    marginTop: 14
+    marginTop: 20
   },
   listCard: {
     backgroundColor: "#ffffff",
@@ -307,7 +276,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     flexDirection: "row",
     gap: 14,
-    minHeight: 62,
+    minHeight: 56,
     paddingHorizontal: 16
   },
   infoCopy: {
@@ -315,14 +284,93 @@ const styles = StyleSheet.create({
   },
   infoTitle: {
     color: "#111827",
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "900"
   },
   infoSubtitle: {
     color: colors.muted,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "700",
     marginTop: 2
+  },
+  emptyOrdersCard: {
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    borderColor: colors.stroke,
+    borderWidth: 1,
+    padding: 24,
+    alignItems: "center"
+  },
+  emptyOrdersText: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: "700"
+  },
+  ordersList: {
+    gap: 12
+  },
+  orderCard: {
+    backgroundColor: "#ffffff",
+    borderColor: colors.stroke,
+    borderRadius: 8,
+    borderWidth: 1,
+    padding: 14
+  },
+  orderCardHeader: {
+    alignItems: "center",
+    borderBottomColor: "#f3f4f6",
+    borderBottomWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingBottom: 8
+  },
+  orderId: {
+    color: "#111827",
+    fontSize: 13,
+    fontWeight: "800"
+  },
+  orderDate: {
+    color: colors.muted,
+    fontSize: 11,
+    marginTop: 2
+  },
+  orderStatusBadge: {
+    backgroundColor: "#e8f8ed",
+    borderRadius: 4,
+    color: colors.green,
+    fontSize: 11,
+    fontWeight: "800",
+    paddingHorizontal: 6,
+    paddingVertical: 2
+  },
+  orderItemsText: {
+    color: colors.ink,
+    fontSize: 13,
+    lineHeight: 18,
+    marginVertical: 10
+  },
+  orderCardFooter: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between"
+  },
+  orderPrice: {
+    color: "#111827",
+    fontSize: 14,
+    fontWeight: "900"
+  },
+  reorderBtn: {
+    backgroundColor: "#fff7e6",
+    borderColor: "#ff9900",
+    borderRadius: 4,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 6
+  },
+  reorderBtnText: {
+    color: "#ff9900",
+    fontSize: 12,
+    fontWeight: "800"
   },
   logout: {
     alignItems: "center",
@@ -330,19 +378,19 @@ const styles = StyleSheet.create({
     borderColor: colors.stroke,
     borderRadius: 8,
     borderWidth: 1,
-    marginTop: 22,
-    paddingVertical: 16
+    marginTop: 24,
+    paddingVertical: 14
   },
   logoutText: {
-    color: "#111827",
-    fontSize: 16,
+    color: "#dc2626",
+    fontSize: 15,
     fontWeight: "900"
   },
   version: {
     color: "#59616d",
-    fontSize: 13,
-    fontWeight: "800",
-    marginTop: 12,
+    fontSize: 12,
+    fontWeight: "700",
+    marginTop: 16,
     textAlign: "center"
   }
 });

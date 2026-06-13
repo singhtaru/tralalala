@@ -45,19 +45,19 @@ export default function CartScreen({ cart, changeQuantity, emergencyMode, goBack
                 </Pressable>
               </View>
             </View>
-            <Text style={styles.cartPrice}>INR {item.price * item.qty}</Text>
+            <Text style={styles.cartPrice}>₹{item.price * item.qty}</Text>
           </View>
         ))}
         {cart.length ? (
           <View style={styles.billCard}>
             <Text style={styles.billTitle}>Bill details</Text>
-            <BillRow label="Item total" value={`INR ${total}`} />
-            <BillRow label="Delivery partner fee" value={`INR ${deliveryFee}`} />
-            <BillRow label="Handling fee" value={`INR ${handlingFee}`} />
-            <BillRow label="Amazon Now savings" value={`- INR ${discount}`} green />
+            <BillRow label="Item total" value={`₹${total}`} />
+            <BillRow label="Delivery partner fee" value={`₹${deliveryFee}`} />
+            <BillRow label="Handling fee" value={`₹${handlingFee}`} />
+            <BillRow label="Amazon Now savings" value={`- ₹${discount}`} green />
             <View style={styles.billTotalRow}>
               <Text style={styles.billTotalLabel}>Grand total</Text>
-              <Text style={styles.billTotalValue}>INR {grandTotal}</Text>
+              <Text style={styles.billTotalValue}>₹{grandTotal}</Text>
             </View>
           </View>
         ) : null}
@@ -83,7 +83,7 @@ export default function CartScreen({ cart, changeQuantity, emergencyMode, goBack
       <View style={styles.checkoutBar}>
         <View>
           <Text style={styles.checkoutLabel}>Total</Text>
-          <Text style={styles.checkoutTotal}>INR {grandTotal}</Text>
+          <Text style={styles.checkoutTotal}>₹{grandTotal}</Text>
         </View>
         <Pressable
           disabled={cart.length === 0}
