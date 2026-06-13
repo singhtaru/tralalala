@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 class ChatRequest(BaseModel):
     query: str
+    session_id: Optional[str] = "default"
 
 
 class IntentResult(BaseModel):
@@ -25,6 +26,7 @@ class Product(BaseModel):
     name: str
     category: str
     price: float
+    quantity: Optional[int] = 1
     description: Optional[str] = None
     thumbnail: Optional[str] = None
     source: Optional[str] = None
@@ -55,6 +57,7 @@ class Basket(BaseModel):
 class Cart(BaseModel):
     items: list[Product]
     total: float
+    total_quantity: int = 0
 
 
 class ToolCall(BaseModel):
@@ -75,3 +78,4 @@ class ChatResponse(BaseModel):
     cart: Cart
     total: float
     message: str
+    reason: str

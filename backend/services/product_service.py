@@ -104,6 +104,16 @@ BASKET_TEMPLATES = {
     "snacks": [["snack", "healthy_snack"], ["snack", "healthy_snack"], ["drink", "healthy_drink"]],
 }
 
+CATEGORY_TO_TAGS = {
+    "snacks": {"snack", "healthy_snack", "drink", "healthy_drink", "sweet_snack"},
+    "healthy_snacks": {"healthy_snack", "healthy_drink", "snack"},
+    "drinks": {"drink", "healthy_drink"},
+    "instant_food": {"instant_food", "drink", "healthy_drink"},
+    "breakfast": {"healthy_snack", "instant_food", "healthy_drink", "snack"},
+    "party_food": {"snack", "healthy_snack", "drink", "sweet_snack"},
+    "general": {"snack", "healthy_snack", "drink", "healthy_drink", "instant_food", "sweet_snack"},
+}
+
 
 def _load_local_products():
     with PRODUCTS_FILE.open("r", encoding="utf-8") as file:
@@ -168,7 +178,7 @@ def _infer_product_tags(product):
             tags.add("snack")
     if category == "drinks":
         tags.add("drink")
-    if category == "instant food":
+    if category == "instant_food":
         tags.add("instant_food")
     if category in NON_FOOD_CATEGORIES:
         tags.add("non_food")
@@ -178,7 +188,7 @@ def _infer_product_tags(product):
 
 def _is_food_request(user_constraints):
     return (
-        user_constraints.get("category") in {"snacks", "drinks", "instant food"}
+        user_constraints.get("category") in {"snacks", "healthy_snacks", "drinks", "instant_food", "breakfast", "party_food"}
         or bool(user_constraints.get("occasion"))
         or any(constraint in {"healthy", "vegan", "vegetarian", "high protein", "low sugar"} for constraint in user_constraints.get("constraints", []))
     )
@@ -208,10 +218,16 @@ def _allowed_tags_for_request(user_constraints):
     category = user_constraints.get("category")
     occasion = user_constraints.get("occasion")
 
-    if category == "instant food":
+    if category == "instant_food":
         return {"instant_food", "drink", "healthy_drink"}
     if category == "drinks":
         return {"drink", "healthy_drink"}
+    if category == "healthy_snacks":
+        return {"healthy_snack", "healthy_drink", "snack"}
+    if category == "breakfast":
+        return {"healthy_snack", "instant_food", "healthy_drink", "snack"}
+    if category == "party_food":
+        return {"snack", "healthy_snack", "drink", "sweet_snack"}
     if category == "snacks" or occasion == "movie night":
         return {"snack", "healthy_snack", "drink", "healthy_drink", "sweet_snack"}
     return {"snack", "healthy_snack", "drink", "healthy_drink", "instant_food", "sweet_snack"}
@@ -224,7 +240,7 @@ def _matches_request_type(product, user_constraints):
     if not tags & allowed_tags:
         return False
 
-    if user_constraints.get("category") == "instant food" and "instant_food" not in tags:
+    if user_constraints.get("category") == "instant_food" and "instant_food" not in tags:
         return False
     if user_constraints.get("category") == "drinks" and not (tags & {"drink", "healthy_drink"}):
         return False
@@ -276,10 +292,11 @@ def search_products(query, user_constraints=None):
             semantic_bonus += 20
         if user_constraints.get("category") == "drinks" and tags & {"drink", "healthy_drink"}:
             semantic_bonus += 20
-        if user_constraints.get("category") == "instant food" and "instant_food" in tags:
+        if user_constraints.get("category") == "instant_food" and "instant_food" in tags:
             semantic_bonus += 35
         if user_constraints.get("occasion") == "movie night" and tags & {"snack", "healthy_snack", "drink"}:
             semantic_bonus += 18
+
         if "healthy" in user_constraints.get("constraints", []) and tags & {"healthy_snack", "healthy_drink"}:
             semantic_bonus += 18
 
@@ -287,7 +304,14 @@ def search_products(query, user_constraints=None):
         if total_score > 0:
             scored_products.append((total_score, product))
 
-    scored_products.sort(key=lambda item: (-item[0], item[1]["price"], item[1]["name"]))
+    scored_products.sort(
+        key=lambda item: (
+            -item[0],
+            0 if item[1].get("source") == "local-fallback" else 1,
+            item[1]["price"],
+            item[1]["name"],
+        )
+    )
     matched_products = [product for _, product in scored_products]
 
     if matched_products:
@@ -300,17 +324,24 @@ def _score_relevance(product, user_constraints):
     goal_tokens = set(_tokenize(user_constraints.get("goal", "")))
     product_tokens = set(_tokenize(_product_text(product)))
     tags = _infer_product_tags(product)
+    source_bonus = 10.0 if product.get("source") == "local-fallback" else 0.0
 
     overlap = len(goal_tokens & product_tokens) * 12
     tag_bonus = 0
-    if user_constraints.get("category") == "instant food" and "instant_food" in tags:
+    if user_constraints.get("category") == "instant_food" and "instant_food" in tags:
         tag_bonus += 35
     if user_constraints.get("category") == "snacks" and tags & {"snack", "healthy_snack"}:
         tag_bonus += 25
+    if user_constraints.get("category") == "healthy_snacks" and tags & {"healthy_snack", "healthy_drink"}:
+        tag_bonus += 28
+    if user_constraints.get("category") == "breakfast" and tags & {"healthy_snack", "instant_food"}:
+        tag_bonus += 28
+    if user_constraints.get("category") == "party_food" and tags & {"snack", "sweet_snack"}:
+        tag_bonus += 22
     if user_constraints.get("category") == "drinks" and tags & {"drink", "healthy_drink"}:
         tag_bonus += 25
 
-    return min(70.0, float(overlap + tag_bonus))
+    return min(70.0, float(overlap + tag_bonus + source_bonus))
 
 
 def _score_budget(product, user_constraints):
@@ -320,7 +351,7 @@ def _score_budget(product, user_constraints):
 
     price = product["price"]
     if price > budget:
-        return -40.0
+        return -10.0
 
     utilization = price / budget if budget else 0
     return round(18.0 - (utilization * 10.0), 2)
@@ -349,7 +380,7 @@ def _score_constraints(product, user_constraints):
             matched_constraints.append(constraint)
         constraint_score += delta
 
-        if constraint.lower() == "healthy" and any(token in product_text for token in ["coke", "cola", "soda", "cookie", "cookies", "chocolate"]):
+        if constraint.lower() == "healthy" and any(token in product_text for token in ["coke", "cola", "soda", "cookie", "cookies", "chocolate", "chips", "nachos", "brownie", "candy"]):
             constraint_score -= 20
 
     return max(-60.0, min(60.0, constraint_score)), matched_constraints
@@ -380,7 +411,7 @@ def rank_products(products, user_constraints):
             }
         )
 
-    ranked.sort(key=lambda product: (-product["score"], product["price"], product["name"]))
+    ranked.sort(key=lambda product: (-product["score"], 0 if product.get("source") == "local-fallback" else 1, product["price"], product["name"]))
     return ranked
 
 
@@ -418,7 +449,11 @@ def build_candidate_baskets(ranked_products, user_constraints, limit=3):
 
     budget = user_constraints.get("budget")
     group_size = user_constraints.get("group_size")
-    max_items = min(max(group_size or 3, 2), 5)
+    if group_size:
+        target_items = min(max(3, group_size + 1 if group_size <= 4 else group_size), 8)
+    else:
+        target_items = 4
+    max_items = min(max(target_items, 2), 8)
     pool = ranked_products[: min(len(ranked_products), 10)]
     baskets = []
     seen = set()
@@ -435,11 +470,16 @@ def build_candidate_baskets(ranked_products, user_constraints, limit=3):
                 continue
             seen.add(product_ids)
 
+            items_with_quantities = _assign_quantities(list(combo), group_size)
+            actual_total = round(sum(item["price"] * item.get("quantity", 1) for item in items_with_quantities), 2)
+            if budget is not None and actual_total > budget:
+                continue
+
             product_score = sum(item["score"] for item in combo)
             diversity_bonus = len({frozenset(_infer_product_tags(item)) for item in combo}) * 5
             budget_bonus = 0.0
             if budget:
-                budget_bonus = max(0.0, 15.0 - abs(budget - total) / max(budget, 1) * 15.0)
+                budget_bonus = max(0.0, 15.0 - abs(budget - actual_total) / max(budget, 1) * 15.0)
             template_bonus = _basket_template_score(combo, template)
             group_bonus = min(size, group_size or size) * 2
             basket_score = round(product_score + diversity_bonus + budget_bonus + template_bonus + group_bonus, 2)
@@ -447,20 +487,21 @@ def build_candidate_baskets(ranked_products, user_constraints, limit=3):
             baskets.append(
                 {
                     "product_ids": list(product_ids),
-                    "items": list(combo),
-                    "total": total,
+                    "items": items_with_quantities,
+                    "total": actual_total,
                     "score": basket_score,
-                    "rationale": _build_basket_rationale(combo, total, user_constraints),
+                    "rationale": _build_basket_rationale(items_with_quantities, actual_total, user_constraints),
                 }
             )
 
     if not baskets:
         best_single = ranked_products[0]
+        assigned_items = _assign_quantities([best_single], group_size)
         baskets.append(
             {
                 "product_ids": [best_single["id"]],
-                "items": [best_single],
-                "total": best_single["price"],
+                "items": assigned_items,
+                "total": round(sum(item["price"] * item.get("quantity", 1) for item in assigned_items), 2),
                 "score": best_single["score"],
                 "rationale": "Best available single item when no full basket fit the budget.",
             }
@@ -475,12 +516,14 @@ def _select_basket_template(user_constraints):
         return BASKET_TEMPLATES["healthy movie night"]
     if user_constraints.get("occasion") == "movie night":
         return BASKET_TEMPLATES["movie night"]
-    if user_constraints.get("category") == "instant food":
+    if user_constraints.get("category") == "instant_food":
         return BASKET_TEMPLATES["instant food"]
     if user_constraints.get("category") == "drinks":
         return BASKET_TEMPLATES["drinks"]
-    if user_constraints.get("category") == "snacks":
+    if user_constraints.get("category") in {"snacks", "healthy_snacks", "party_food"}:
         return BASKET_TEMPLATES["snacks"]
+    if user_constraints.get("category") == "breakfast":
+        return [["healthy_snack"], ["instant_food"], ["healthy_drink"]]
     return []
 
 
@@ -518,3 +561,60 @@ def _build_basket_rationale(items, total, user_constraints):
     if budget is not None:
         message += f", staying near the Rs {budget} budget at Rs {total}"
     return message + "."
+
+
+def plan_quantities(ranked_products, user_constraints):
+    group_size = user_constraints.get("group_size") or 1
+    if not ranked_products:
+        return []
+
+    preferred_count = min(max(3, group_size // 2 + 2), 8)
+    chosen = ranked_products[:preferred_count]
+    planned = []
+    remaining = group_size
+
+    for index, product in enumerate(chosen):
+        if group_size <= 2:
+            quantity = 1
+        else:
+            base = max(1, group_size // preferred_count)
+            quantity = base
+            if index < (group_size % preferred_count):
+                quantity += 1
+
+        quantity = min(quantity, max(1, remaining))
+        remaining -= quantity
+        planned.append({**product, "quantity": quantity})
+
+    if remaining > 0 and planned:
+        planned[0]["quantity"] += remaining
+
+    return planned
+
+
+def _assign_quantities(items, group_size):
+    if not items:
+        return items
+
+    quantity_plan = []
+    if not group_size or group_size <= 1:
+        return [{**item, "quantity": 1} for item in items]
+
+    remaining = group_size
+    count = len(items)
+    base = max(1, group_size // count)
+
+    for index, item in enumerate(items):
+        quantity = base
+        if index < (group_size % count):
+            quantity += 1
+        if index == count - 1:
+            quantity = max(1, remaining)
+        quantity = min(quantity, max(1, remaining))
+        remaining -= quantity
+        quantity_plan.append({**item, "quantity": quantity})
+
+    if remaining > 0:
+        quantity_plan[0]["quantity"] += remaining
+
+    return quantity_plan

@@ -12,15 +12,23 @@ def add_to_cart(product_id):
     if not product:
         return None
 
-    _CART_ITEMS.append(product)
-    return product
+    existing_item = next((item for item in _CART_ITEMS if item["id"] == product_id), None)
+    if existing_item:
+        existing_item["quantity"] = existing_item.get("quantity", 1) + 1
+        return existing_item
+
+    cart_item = {**product, "quantity": 1}
+    _CART_ITEMS.append(cart_item)
+    return cart_item
 
 
 def get_cart():
-    total = round(sum(item["price"] for item in _CART_ITEMS), 2)
+    total = round(sum(item["price"] * item.get("quantity", 1) for item in _CART_ITEMS), 2)
+    total_quantity = sum(item.get("quantity", 1) for item in _CART_ITEMS)
     return {
         "items": list(_CART_ITEMS),
         "total": total,
+        "total_quantity": total_quantity,
     }
 
 
@@ -31,12 +39,13 @@ def clear_cart():
         "items": [],
         "total": 0.0,
         "removed_count": removed_count,
+        "total_quantity": 0,
     }
 
 
 def checkout():
     cart = get_cart()
-    item_count = len(cart["items"])
+    item_count = sum(item.get("quantity", 1) for item in cart["items"])
     if item_count == 0:
         return {
             "items": [],
@@ -53,4 +62,5 @@ def checkout():
         "item_count": item_count,
         "status": "checked_out",
         "message": f"Checkout completed for {item_count} items totaling Rs {cart['total']}.",
+        "total_quantity": item_count,
     }
