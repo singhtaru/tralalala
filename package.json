@@ -1,0 +1,13 @@
+{
+  "name": "amazon-now-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix frontend run start",
+    "web": "npm --prefix frontend run web",
+    "web:clear": "npm --prefix frontend run web:clear",
+    "android": "npm --prefix frontend run android",
+    "ios": "npm --prefix frontend run ios",
+    "install:frontend": "npm --prefix frontend install"
+  }
+}
