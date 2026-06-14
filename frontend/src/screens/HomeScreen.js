@@ -7,7 +7,7 @@ import HomeHeader from "../components/home/HomeHeader";
 import PromoBanner from "../components/home/PromoBanner";
 import QuickActions from "../components/home/QuickActions";
 import SearchHeader from "../components/home/SearchHeader";
-import { categorySections, products, topTabs } from "../data/products";
+import { categorySections, products as localProducts, topTabs } from "../data/products";
 import { colors } from "../theme/colors";
 
 const pastOrdersMock = [
@@ -47,7 +47,9 @@ export default function HomeScreen({
   setActiveTab,
   setSearchQuery,
   setScreen,
-  onReorderPastItems
+  onReorderPastItems,
+  products = localProducts,
+  triggerVoiceAssistant
 }) {
   const normalizedQuery = searchQuery.trim().toLowerCase();
   
@@ -120,6 +122,7 @@ export default function HomeScreen({
           setActiveTab={setActiveTab}
           setQuery={setSearchQuery}
           setScreen={setScreen}
+          triggerVoiceAssistant={triggerVoiceAssistant}
         />
         <PromoBanner onPress={() => openCategory(categorySections[0].tiles[0])} />
         
@@ -193,7 +196,7 @@ export default function HomeScreen({
         </View>
 
         {/* Floating Alexa Ring Button */}
-        <Pressable onPress={() => setScreen("assistant")} style={styles.alexaFloat}>
+        <Pressable onPress={triggerVoiceAssistant} style={styles.alexaFloat}>
           <View style={styles.alexaRingOuter}>
             <View style={styles.alexaRingInner}>
               <Ionicons name="mic" size={26} color="#ffffff" />
