@@ -113,7 +113,8 @@ export const products = excelProducts.map((product) => {
   const meta = categoryMeta[product.category];
   return {
     ...product,
-    image: meta.image,
+    image: product.imageUrl || meta.image,
+    fallbackImage: meta.image,
     tag: meta.tag,
     unit: product.quantity,
     reason: `${product.rating} star ${meta.title.toLowerCase()} product with ${product.deliveryMins}-minute delivery.`

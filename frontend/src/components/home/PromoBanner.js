@@ -1,10 +1,10 @@
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../theme/colors";
 
-export default function PromoBanner() {
+export default function PromoBanner({ onPress }) {
   return (
-    <View style={styles.banner}>
+    <Pressable onPress={onPress} style={styles.banner}>
       <View style={styles.copy}>
         <Text style={styles.kicker}>amazon now</Text>
         <Text style={styles.title}>Fresh picks, fastest delivery</Text>
@@ -14,7 +14,7 @@ export default function PromoBanner() {
         source={{ uri: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=500&q=80" }}
         style={styles.image}
       />
-    </View>
+    </Pressable>
   );
 }
 

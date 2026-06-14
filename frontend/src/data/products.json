@@ -7,7 +7,9 @@
     "price": 30,
     "rating": 4.6,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=500&q=80",
+    "brand": "FreshFarm"
   },
   {
     "id": "P002",
@@ -17,7 +19,9 @@
     "price": 25,
     "rating": 4.5,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=500&q=80",
+    "brand": "FreshFarm"
   },
   {
     "id": "P003",
@@ -27,7 +31,9 @@
     "price": 40,
     "rating": 4.4,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1508747702-f5202165383e?auto=format&fit=crop&w=500&q=80",
+    "brand": "FreshFarm"
   },
   {
     "id": "P004",
@@ -37,7 +43,9 @@
     "price": 50,
     "rating": 4.7,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=500&q=80",
+    "brand": "OrganicDelight"
   },
   {
     "id": "P005",
@@ -47,7 +55,9 @@
     "price": 180,
     "rating": 4.8,
     "deliveryMins": 12,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=500&q=80",
+    "brand": "OrganicDelight"
   },
   {
     "id": "P006",
@@ -57,7 +67,9 @@
     "price": 120,
     "rating": 4.6,
     "deliveryMins": 12,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=500&q=80",
+    "brand": "OrganicDelight"
   },
   {
     "id": "P007",
@@ -67,7 +79,9 @@
     "price": 45,
     "rating": 4.5,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=500&q=80",
+    "brand": "FreshFarm"
   },
   {
     "id": "P008",
@@ -77,7 +91,9 @@
     "price": 35,
     "rating": 4.4,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=500&q=80",
+    "brand": "OrganicDelight"
   },
   {
     "id": "P009",
@@ -87,7 +103,9 @@
     "price": 290,
     "rating": 4.8,
     "deliveryMins": 15,
-    "quantity": "5kg"
+    "quantity": "5kg",
+    "imageUrl": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=500&q=80",
+    "brand": "Aashirvaad"
   },
   {
     "id": "P010",
@@ -97,7 +115,9 @@
     "price": 275,
     "rating": 4.7,
     "deliveryMins": 15,
-    "quantity": "5kg"
+    "quantity": "5kg",
+    "imageUrl": "https://images.unsplash.com/photo-1608686207856-001b95cf60ca?auto=format&fit=crop&w=500&q=80",
+    "brand": "Fortune"
   },
   {
     "id": "P011",
@@ -107,7 +127,9 @@
     "price": 450,
     "rating": 4.8,
     "deliveryMins": 15,
-    "quantity": "5kg"
+    "quantity": "5kg",
+    "imageUrl": "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=500&q=80",
+    "brand": "India Gate"
   },
   {
     "id": "P012",
@@ -117,7 +139,9 @@
     "price": 160,
     "rating": 4.7,
     "deliveryMins": 15,
-    "quantity": "1kg"
+    "quantity": "1kg",
+    "imageUrl": "https://images.unsplash.com/photo-1585993003615-517855d12221?auto=format&fit=crop&w=500&q=80",
+    "brand": "Tata Sampann"
   },
   {
     "id": "P013",
@@ -127,7 +151,9 @@
     "price": 145,
     "rating": 4.6,
     "deliveryMins": 15,
-    "quantity": "1kg"
+    "quantity": "1kg",
+    "imageUrl": "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=500&q=80",
+    "brand": "Tata Sampann"
   },
   {
     "id": "P014",
@@ -137,7 +163,9 @@
     "price": 130,
     "rating": 4.5,
     "deliveryMins": 15,
-    "quantity": "1kg"
+    "quantity": "1kg",
+    "imageUrl": "https://images.unsplash.com/photo-1547825407-2d060104b7f8?auto=format&fit=crop&w=500&q=80",
+    "brand": "Tata Sampann"
   },
   {
     "id": "P015",
@@ -147,7 +175,9 @@
     "price": 110,
     "rating": 4.5,
     "deliveryMins": 15,
-    "quantity": "1kg"
+    "quantity": "1kg",
+    "imageUrl": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=500&q=80",
+    "brand": "Organic Tattva"
   },
   {
     "id": "P016",
@@ -157,7 +187,9 @@
     "price": 75,
     "rating": 4.4,
     "deliveryMins": 15,
-    "quantity": "1kg"
+    "quantity": "1kg",
+    "imageUrl": "https://images.unsplash.com/photo-1613292443284-8d10ef9383fe?auto=format&fit=crop&w=500&q=80",
+    "brand": "Rajdhani"
   },
   {
     "id": "P017",
@@ -167,7 +199,9 @@
     "price": 170,
     "rating": 4.7,
     "deliveryMins": 12,
-    "quantity": "1L"
+    "quantity": "1L",
+    "imageUrl": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=500&q=80",
+    "brand": "Fortune"
   },
   {
     "id": "P018",
@@ -177,7 +211,9 @@
     "price": 190,
     "rating": 4.6,
     "deliveryMins": 12,
-    "quantity": "1L"
+    "quantity": "1L",
+    "imageUrl": "https://images.unsplash.com/photo-1471193945509-9ad0617afabf?auto=format&fit=crop&w=500&q=80",
+    "brand": "Fortune"
   },
   {
     "id": "P019",
@@ -187,7 +223,9 @@
     "price": 650,
     "rating": 4.9,
     "deliveryMins": 12,
-    "quantity": "1L"
+    "quantity": "1L",
+    "imageUrl": "https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?auto=format&fit=crop&w=500&q=80",
+    "brand": "Amul"
   },
   {
     "id": "P020",
@@ -197,7 +235,9 @@
     "price": 60,
     "rating": 4.7,
     "deliveryMins": 12,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=500&q=80",
+    "brand": "Everest"
   },
   {
     "id": "P021",
@@ -207,7 +247,9 @@
     "price": 75,
     "rating": 4.6,
     "deliveryMins": 12,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=500&q=80",
+    "brand": "Everest"
   },
   {
     "id": "P022",
@@ -217,7 +259,9 @@
     "price": 55,
     "rating": 4.5,
     "deliveryMins": 12,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1608797178974-15b35a61d121?auto=format&fit=crop&w=500&q=80",
+    "brand": "Everest"
   },
   {
     "id": "P023",
@@ -227,7 +271,9 @@
     "price": 85,
     "rating": 4.8,
     "deliveryMins": 12,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1532336414038-cf19250c5757?auto=format&fit=crop&w=500&q=80",
+    "brand": "Catch"
   },
   {
     "id": "P024",
@@ -237,7 +283,9 @@
     "price": 90,
     "rating": 4.6,
     "deliveryMins": 12,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1509358271058-acd22cc93898?auto=format&fit=crop&w=500&q=80",
+    "brand": "Catch"
   },
   {
     "id": "P025",
@@ -247,7 +295,9 @@
     "price": 68,
     "rating": 4.8,
     "deliveryMins": 10,
-    "quantity": "1L"
+    "quantity": "1L",
+    "imageUrl": "https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=500&q=80",
+    "brand": "Amul"
   },
   {
     "id": "P026",
@@ -257,7 +307,9 @@
     "price": 45,
     "rating": 4.6,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=500&q=80",
+    "brand": "Britannia"
   },
   {
     "id": "P027",
@@ -267,7 +319,9 @@
     "price": 40,
     "rating": 4.5,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&w=500&q=80",
+    "brand": "Britannia"
   },
   {
     "id": "P028",
@@ -277,7 +331,9 @@
     "price": 90,
     "rating": 4.7,
     "deliveryMins": 10,
-    "quantity": "Pack of 12"
+    "quantity": "Pack of 12",
+    "imageUrl": "https://images.unsplash.com/photo-1506976785307-8732e854ad03?auto=format&fit=crop&w=500&q=80",
+    "brand": "Eggoz"
   },
   {
     "id": "P029",
@@ -287,7 +343,9 @@
     "price": 140,
     "rating": 4.7,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=500&q=80",
+    "brand": "Amul"
   },
   {
     "id": "P030",
@@ -297,7 +355,9 @@
     "price": 280,
     "rating": 4.8,
     "deliveryMins": 10,
-    "quantity": "500g"
+    "quantity": "500g",
+    "imageUrl": "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?q=80&w=300",
+    "brand": "Amul"
   },
   {
     "id": "P031",
@@ -307,7 +367,9 @@
     "price": 95,
     "rating": 4.7,
     "deliveryMins": 10,
-    "quantity": "200g"
+    "quantity": "200g",
+    "imageUrl": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=500&q=80",
+    "brand": "Amul"
   },
   {
     "id": "P032",
@@ -317,7 +379,9 @@
     "price": 45,
     "rating": 4.6,
     "deliveryMins": 10,
-    "quantity": "400g"
+    "quantity": "400g",
+    "imageUrl": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=500&q=80",
+    "brand": "Mother Dairy"
   },
   {
     "id": "P033",
@@ -327,7 +391,9 @@
     "price": 40,
     "rating": 4.7,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=500&q=80",
+    "brand": "Unibic"
   },
   {
     "id": "P034",
@@ -337,7 +403,9 @@
     "price": 10,
     "rating": 4.9,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1558961309-dbdf337e067e?auto=format&fit=crop&w=500&q=80",
+    "brand": "Parle"
   },
   {
     "id": "P035",
@@ -347,7 +415,9 @@
     "price": 35,
     "rating": 4.8,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?q=80&w=300",
+    "brand": "Britannia"
   },
   {
     "id": "P036",
@@ -357,7 +427,9 @@
     "price": 50,
     "rating": 4.6,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1600431521340-491eca880813?auto=format&fit=crop&w=500&q=80",
+    "brand": "Britannia"
   },
   {
     "id": "P037",
@@ -367,7 +439,9 @@
     "price": 60,
     "rating": 4.5,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80",
+    "brand": "Winkies"
   },
   {
     "id": "P038",
@@ -377,7 +451,9 @@
     "price": 80,
     "rating": 4.4,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=500&q=80",
+    "brand": "Elite"
   },
   {
     "id": "P039",
@@ -387,7 +463,9 @@
     "price": 70,
     "rating": 4.6,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1607958996333-41aef7caefaa?auto=format&fit=crop&w=500&q=80",
+    "brand": "Elite"
   },
   {
     "id": "P040",
@@ -397,7 +475,9 @@
     "price": 55,
     "rating": 4.7,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1590080875132-34909a3cf340?auto=format&fit=crop&w=500&q=80",
+    "brand": "McVitie's"
   },
   {
     "id": "P041",
@@ -407,7 +487,9 @@
     "price": 450,
     "rating": 4.8,
     "deliveryMins": 12,
-    "quantity": "500g"
+    "quantity": "500g",
+    "imageUrl": "https://images.unsplash.com/photo-1508061253366-f7da158b6d46?auto=format&fit=crop&w=500&q=80",
+    "brand": "Happilo"
   },
   {
     "id": "P042",
@@ -417,7 +499,9 @@
     "price": 550,
     "rating": 4.8,
     "deliveryMins": 12,
-    "quantity": "500g"
+    "quantity": "500g",
+    "imageUrl": "https://images.unsplash.com/photo-1508061458087-05d6dbfcfd4a?auto=format&fit=crop&w=500&q=80",
+    "brand": "Happilo"
   },
   {
     "id": "P043",
@@ -427,7 +511,9 @@
     "price": 380,
     "rating": 4.7,
     "deliveryMins": 12,
-    "quantity": "250g"
+    "quantity": "250g",
+    "imageUrl": "https://images.unsplash.com/photo-1585503487877-eeff56d3c35b?auto=format&fit=crop&w=500&q=80",
+    "brand": "Happilo"
   },
   {
     "id": "P044",
@@ -437,7 +523,9 @@
     "price": 220,
     "rating": 4.7,
     "deliveryMins": 12,
-    "quantity": "1kg"
+    "quantity": "1kg",
+    "imageUrl": "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=500&q=80",
+    "brand": "Quaker"
   },
   {
     "id": "P045",
@@ -447,7 +535,9 @@
     "price": 180,
     "rating": 4.6,
     "deliveryMins": 12,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1590080875881-81f1e8e89454?auto=format&fit=crop&w=500&q=80",
+    "brand": "Kellogg's"
   },
   {
     "id": "P046",
@@ -457,7 +547,9 @@
     "price": 320,
     "rating": 4.7,
     "deliveryMins": 12,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1517093157656-b9eccef91cb1?q=80&w=300",
+    "brand": "Kellogg's"
   },
   {
     "id": "P047",
@@ -467,7 +559,9 @@
     "price": 140,
     "rating": 4.5,
     "deliveryMins": 12,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1569562211093-4ed0d0758f12?auto=format&fit=crop&w=500&q=80",
+    "brand": "Happilo"
   },
   {
     "id": "P048",
@@ -477,7 +571,9 @@
     "price": 180,
     "rating": 4.6,
     "deliveryMins": 12,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1595908129746-57ca1a63dd4d?auto=format&fit=crop&w=500&q=80",
+    "brand": "Kimia"
   },
   {
     "id": "P049",
@@ -487,7 +583,9 @@
     "price": 280,
     "rating": 4.8,
     "deliveryMins": 15,
-    "quantity": "500g"
+    "quantity": "500g",
+    "imageUrl": "https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=500&q=80",
+    "brand": "Licious"
   },
   {
     "id": "P050",
@@ -497,7 +595,9 @@
     "price": 260,
     "rating": 4.7,
     "deliveryMins": 15,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1587593817642-5999cd152795?auto=format&fit=crop&w=500&q=80",
+    "brand": "Licious"
   },
   {
     "id": "P051",
@@ -507,7 +607,9 @@
     "price": 350,
     "rating": 4.7,
     "deliveryMins": 15,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1534604973900-c43ab4c2e0ab?auto=format&fit=crop&w=500&q=80",
+    "brand": "Licious"
   },
   {
     "id": "P052",
@@ -517,7 +619,9 @@
     "price": 420,
     "rating": 4.6,
     "deliveryMins": 15,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1559737633-8f180249c94e?auto=format&fit=crop&w=500&q=80",
+    "brand": "Licious"
   },
   {
     "id": "P053",
@@ -527,7 +631,9 @@
     "price": 750,
     "rating": 4.8,
     "deliveryMins": 15,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1603048588665-791ca8aea617?auto=format&fit=crop&w=500&q=80",
+    "brand": "Licious"
   },
   {
     "id": "P054",
@@ -537,7 +643,9 @@
     "price": 240,
     "rating": 4.5,
     "deliveryMins": 15,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=500&q=80",
+    "brand": "FreshtoHome"
   },
   {
     "id": "P055",
@@ -547,7 +655,9 @@
     "price": 300,
     "rating": 4.5,
     "deliveryMins": 15,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=500&q=80",
+    "brand": "FreshtoHome"
   },
   {
     "id": "P056",
@@ -557,7 +667,9 @@
     "price": 290,
     "rating": 4.6,
     "deliveryMins": 15,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&w=500&q=80",
+    "brand": "Licious"
   },
   {
     "id": "P057",
@@ -567,7 +679,9 @@
     "price": 899,
     "rating": 4.7,
     "deliveryMins": 20,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=500&q=80",
+    "brand": "Prestige"
   },
   {
     "id": "P058",
@@ -577,7 +691,9 @@
     "price": 1499,
     "rating": 4.8,
     "deliveryMins": 20,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=500&q=80",
+    "brand": "Hawkins"
   },
   {
     "id": "P059",
@@ -587,7 +703,9 @@
     "price": 699,
     "rating": 4.6,
     "deliveryMins": 20,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=500&q=80",
+    "brand": "Pigeon"
   },
   {
     "id": "P060",
@@ -597,7 +715,9 @@
     "price": 299,
     "rating": 4.5,
     "deliveryMins": 20,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1606857521015-7f9fcf423740?auto=format&fit=crop&w=500&q=80",
+    "brand": "Prestige"
   },
   {
     "id": "P061",
@@ -607,7 +727,9 @@
     "price": 399,
     "rating": 4.6,
     "deliveryMins": 20,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=500&q=80",
+    "brand": "Cello"
   },
   {
     "id": "P062",
@@ -617,7 +739,9 @@
     "price": 249,
     "rating": 4.5,
     "deliveryMins": 20,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=500&q=80",
+    "brand": "Milton"
   },
   {
     "id": "P063",
@@ -627,7 +751,9 @@
     "price": 20,
     "rating": 4.8,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=500&q=80",
+    "brand": "Lays"
   },
   {
     "id": "P064",
@@ -637,7 +763,9 @@
     "price": 20,
     "rating": 4.7,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1627387115315-1166bf7447a3?auto=format&fit=crop&w=500&q=80",
+    "brand": "Kurkure"
   },
   {
     "id": "P065",
@@ -647,7 +775,9 @@
     "price": 60,
     "rating": 4.8,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1601050690597-df056fb4ce78?auto=format&fit=crop&w=500&q=80",
+    "brand": "Haldiram's"
   },
   {
     "id": "P066",
@@ -657,7 +787,9 @@
     "price": 99,
     "rating": 4.6,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1518047601542-79f18c655718?auto=format&fit=crop&w=500&q=80",
+    "brand": "Doritos"
   },
   {
     "id": "P067",
@@ -667,7 +799,9 @@
     "price": 50,
     "rating": 4.9,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80",
+    "brand": "Cadbury"
   },
   {
     "id": "P068",
@@ -677,7 +811,9 @@
     "price": 30,
     "rating": 4.8,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1587132137056-bfbf0166836e?auto=format&fit=crop&w=500&q=80",
+    "brand": "Nestle"
   },
   {
     "id": "P069",
@@ -687,7 +823,9 @@
     "price": 450,
     "rating": 4.9,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1549007994-cb92caebd54b?auto=format&fit=crop&w=500&q=80",
+    "brand": "Ferrero"
   },
   {
     "id": "P070",
@@ -697,7 +835,9 @@
     "price": 120,
     "rating": 4.6,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1589118949245-7d403a5e94b2?auto=format&fit=crop&w=500&q=80",
+    "brand": "Gits"
   },
   {
     "id": "P071",
@@ -707,7 +847,9 @@
     "price": 60,
     "rating": 4.8,
     "deliveryMins": 10,
-    "quantity": "1L"
+    "quantity": "1L",
+    "imageUrl": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=500&q=80",
+    "brand": "Coca-Cola"
   },
   {
     "id": "P072",
@@ -717,7 +859,9 @@
     "price": 58,
     "rating": 4.7,
     "deliveryMins": 10,
-    "quantity": "1L"
+    "quantity": "1L",
+    "imageUrl": "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=500&q=80",
+    "brand": "Pepsi"
   },
   {
     "id": "P073",
@@ -727,7 +871,9 @@
     "price": 110,
     "rating": 4.6,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=500&q=80",
+    "brand": "Real"
   },
   {
     "id": "P074",
@@ -737,7 +883,9 @@
     "price": 120,
     "rating": 4.7,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1534531173927-aeb928d54385?auto=format&fit=crop&w=500&q=80",
+    "brand": "Frooti"
   },
   {
     "id": "P075",
@@ -747,7 +895,9 @@
     "price": 220,
     "rating": 4.8,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1597481499750-3e6b22637e12?auto=format&fit=crop&w=500&q=80",
+    "brand": "Tata Tea"
   },
   {
     "id": "P076",
@@ -757,7 +907,9 @@
     "price": 350,
     "rating": 4.7,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80",
+    "brand": "Nescafe"
   },
   {
     "id": "P077",
@@ -767,7 +919,9 @@
     "price": 180,
     "rating": 4.6,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1563822249548-9a72b6353cd1?auto=format&fit=crop&w=500&q=80",
+    "brand": "Lipton"
   },
   {
     "id": "P078",
@@ -777,7 +931,9 @@
     "price": 240,
     "rating": 4.6,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=500&q=80",
+    "brand": "Cadbury"
   },
   {
     "id": "P079",
@@ -787,7 +943,9 @@
     "price": 20,
     "rating": 4.8,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1612966608967-b5d32d226b65?auto=format&fit=crop&w=500&q=80",
+    "brand": "Maggi"
   },
   {
     "id": "P080",
@@ -797,7 +955,9 @@
     "price": 50,
     "rating": 4.6,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1621996346565-e3bb64e819d4?auto=format&fit=crop&w=500&q=80",
+    "brand": "Yippee"
   },
   {
     "id": "P081",
@@ -807,7 +967,9 @@
     "price": 899,
     "rating": 4.7,
     "deliveryMins": 12,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1610725664285-7c57e6eeac3f?auto=format&fit=crop&w=500&q=80",
+    "brand": "Ensure"
   },
   {
     "id": "P082",
@@ -817,7 +979,9 @@
     "price": 2499,
     "rating": 4.8,
     "deliveryMins": 12,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?auto=format&fit=crop&w=500&q=80",
+    "brand": "MuscleBlaze"
   },
   {
     "id": "P083",
@@ -827,7 +991,9 @@
     "price": 180,
     "rating": 4.8,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?auto=format&fit=crop&w=500&q=80",
+    "brand": "Amul"
   },
   {
     "id": "P084",
@@ -837,6 +1003,8 @@
     "price": 170,
     "rating": 4.7,
     "deliveryMins": 10,
-    "quantity": "1 pack"
+    "quantity": "1 pack",
+    "imageUrl": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80",
+    "brand": "Amul"
   }
 ]

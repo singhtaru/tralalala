@@ -8,6 +8,8 @@ export default function ProductShelf({
   title,
   actionLabel,
   addToCart,
+  getQuantity,
+  removeFromCart,
   openProduct
 }) {
   return (
@@ -24,7 +26,9 @@ export default function ProductShelf({
               compact
               product={product}
               recommended={index === 0}
-              onAdd={() => addToCart(product)}
+              quantity={getQuantity(product.id)}
+              onDecrement={() => removeFromCart(product)}
+              onIncrement={() => addToCart(product)}
               onPress={() => openProduct(product)}
             />
           ))}
@@ -36,7 +40,9 @@ export default function ProductShelf({
               key={product.id}
               product={product}
               recommended={index === 0}
-              onAdd={() => addToCart(product)}
+              quantity={getQuantity(product.id)}
+              onDecrement={() => removeFromCart(product)}
+              onIncrement={() => addToCart(product)}
               onPress={() => openProduct(product)}
             />
           ))}

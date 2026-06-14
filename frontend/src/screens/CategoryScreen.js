@@ -5,7 +5,14 @@ import ScreenTopBar from "../components/common/ScreenTopBar";
 import { categorySections, products } from "../data/products";
 import { colors } from "../theme/colors";
 
-export default function CategoryScreen({ addToCart, category, goBack, openProduct }) {
+export default function CategoryScreen({
+  addToCart,
+  category,
+  getQuantity,
+  goBack,
+  openProduct,
+  removeFromCart
+}) {
   const sideCategories = categorySections.flatMap((section) => section.tiles).slice(0, 9);
   const [activeCategory, setActiveCategory] = useState(category || sideCategories[0]);
 
@@ -16,55 +23,60 @@ export default function CategoryScreen({ addToCart, category, goBack, openProduc
   }, [category]);
 
   const shownProducts = useMemo(() => {
-    const categoryProducts = products.filter((product) => product.category === activeCategory?.id);
-    const recommendations = products.filter(
-      (product) => product.category !== activeCategory?.id
-    );
-    return [...categoryProducts, ...recommendations].slice(0, 10);
+    return products.filter((product) => product.category === activeCategory?.id);
   }, [activeCategory]);
 
   const title = activeCategory?.title || "Categories";
 
   return (
     <View style={styles.screen}>
-      <ScreenTopBar title={title} subtitle="Delivering to Home" goBack={goBack} rightLabel="share" />
-      <View style={styles.filterRow}>
-        {["Filters", "Sort", "Type", "Price"].map((item) => (
-          <Text key={item} style={styles.filterChip}>{item}</Text>
-        ))}
-      </View>
+      <ScreenTopBar title={title} subtitle="Delivering to Home in 10-15 mins" goBack={goBack} />
       <View style={styles.body}>
-        <ScrollView showsVerticalScrollIndicator={false} style={styles.sideRail} contentContainerStyle={styles.sideRailContent}>
-          {sideCategories.map((item) => (
-            <Pressable
-              key={item.id}
-              onPress={() => setActiveCategory(item)}
-              style={[styles.sideItem, item.id === activeCategory?.id && styles.sideItemActive]}
-            >
-              <Image source={{ uri: item.image }} style={styles.sideImage} />
-              <Text numberOfLines={2} style={[styles.sideText, item.id === activeCategory?.id && styles.sideTextActive]}>
-                {item.title}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.productPane}>
-          <View style={styles.hero}>
-            <Text style={styles.heroTitle}>{title}</Text>
-            <Text style={styles.heroSub}>Freshness checked and delivered fast</Text>
-          </View>
-          <View style={styles.productGrid}>
-            {shownProducts.map((product, index) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                recommended={index === 0}
-                onAdd={() => addToCart(product)}
-                onPress={() => openProduct(product)}
-              />
+        <View style={styles.sideRailFrame}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={styles.sideRail}
+            contentContainerStyle={styles.sideRailContent}
+          >
+            {sideCategories.map((item) => (
+              <Pressable
+                key={item.id}
+                onPress={() => setActiveCategory(item)}
+                style={[styles.sideItem, item.id === activeCategory?.id && styles.sideItemActive]}
+              >
+                <Image source={{ uri: item.image }} style={styles.sideImage} />
+                <Text numberOfLines={3} style={[styles.sideText, item.id === activeCategory?.id && styles.sideTextActive]}>
+                  {item.title}
+                </Text>
+              </Pressable>
             ))}
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </View>
+        <View style={styles.productColumn}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={styles.productScroll}
+            contentContainerStyle={styles.productPane}
+          >
+            <View style={styles.hero}>
+              <Text style={styles.heroTitle}>{title}</Text>
+              <Text style={styles.heroSub}>Freshness checked and delivered fast</Text>
+            </View>
+            <View style={styles.productGrid}>
+              {shownProducts.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  recommended={index === 0}
+                  quantity={getQuantity(product.id)}
+                  onDecrement={() => removeFromCart(product)}
+                  onIncrement={() => addToCart(product)}
+                  onPress={() => openProduct(product)}
+                />
+              ))}
+            </View>
+          </ScrollView>
+        </View>
       </View>
     </View>
   );
@@ -75,29 +87,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     flex: 1
   },
-  filterRow: {
-    backgroundColor: "#ffffff",
-    borderBottomColor: colors.stroke,
-    borderBottomWidth: 1,
-    flexDirection: "row",
-    gap: 10,
-    paddingHorizontal: 104,
-    paddingVertical: 12
-  },
-  filterChip: {
-    color: "#2b2f36",
-    fontSize: 14,
-    fontWeight: "900"
-  },
   body: {
     flex: 1,
     flexDirection: "row"
   },
-  sideRail: {
+  sideRailFrame: {
     backgroundColor: colors.rail,
     borderRightColor: colors.stroke,
     borderRightWidth: 1,
-    width: 92
+    flexGrow: 0,
+    flexShrink: 0,
+    width: 104
+  },
+  sideRail: {
+    flex: 1,
+    width: "100%"
   },
   sideRailContent: {
     paddingBottom: 84,
@@ -105,33 +109,47 @@ const styles = StyleSheet.create({
   },
   sideItem: {
     alignItems: "center",
+    backgroundColor: "#ffffff",
+    borderBottomColor: colors.stroke,
+    borderBottomWidth: 1,
     borderLeftColor: "transparent",
     borderLeftWidth: 4,
-    paddingBottom: 14,
-    paddingHorizontal: 7
+    minHeight: 116,
+    paddingHorizontal: 7,
+    paddingVertical: 12
   },
   sideItemActive: {
+    backgroundColor: "#eefbea",
     borderLeftColor: colors.green
   },
   sideImage: {
     borderRadius: 30,
-    height: 58,
-    width: 58
+    height: 62,
+    width: 62
   },
   sideText: {
     color: colors.muted,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "800",
-    lineHeight: 15,
+    lineHeight: 14,
     marginTop: 7,
     textAlign: "center"
   },
   sideTextActive: {
     color: colors.ink
   },
-  productPane: {
+  productColumn: {
     backgroundColor: "#f4fde9",
-    flex: 1
+    flex: 1,
+    minWidth: 0
+  },
+  productScroll: {
+    flex: 1,
+    width: "100%"
+  },
+  productPane: {
+    flexGrow: 1,
+    width: "100%"
   },
   hero: {
     backgroundColor: "#f0fbdc",
@@ -139,14 +157,14 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     color: "#090b0e",
-    fontSize: 26,
+    fontSize: 22,
     fontWeight: "900",
     letterSpacing: 0,
-    lineHeight: 30
+    lineHeight: 26
   },
   heroSub: {
     color: "#20242a",
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: "700",
     marginTop: 4
   },
