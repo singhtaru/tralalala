@@ -1,0 +1,842 @@
+[
+  {
+    "id": "P001",
+    "name": "Tomato",
+    "category": "fruits",
+    "categoryName": "Vegetables & Fruits",
+    "price": 30,
+    "rating": 4.6,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P002",
+    "name": "Potato",
+    "category": "fruits",
+    "categoryName": "Vegetables & Fruits",
+    "price": 25,
+    "rating": 4.5,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P003",
+    "name": "Onion",
+    "category": "fruits",
+    "categoryName": "Vegetables & Fruits",
+    "price": 40,
+    "rating": 4.4,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P004",
+    "name": "Banana",
+    "category": "fruits",
+    "categoryName": "Vegetables & Fruits",
+    "price": 50,
+    "rating": 4.7,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P005",
+    "name": "Apple",
+    "category": "fruits",
+    "categoryName": "Vegetables & Fruits",
+    "price": 180,
+    "rating": 4.8,
+    "deliveryMins": 12,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P006",
+    "name": "Orange",
+    "category": "fruits",
+    "categoryName": "Vegetables & Fruits",
+    "price": 120,
+    "rating": 4.6,
+    "deliveryMins": 12,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P007",
+    "name": "Carrot",
+    "category": "fruits",
+    "categoryName": "Vegetables & Fruits",
+    "price": 45,
+    "rating": 4.5,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P008",
+    "name": "Spinach",
+    "category": "fruits",
+    "categoryName": "Vegetables & Fruits",
+    "price": 35,
+    "rating": 4.4,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P009",
+    "name": "Aashirvaad Atta 5kg",
+    "category": "atta",
+    "categoryName": "Atta Rice & Dal",
+    "price": 290,
+    "rating": 4.8,
+    "deliveryMins": 15,
+    "quantity": "5kg"
+  },
+  {
+    "id": "P010",
+    "name": "Fortune Atta 5kg",
+    "category": "atta",
+    "categoryName": "Atta Rice & Dal",
+    "price": 275,
+    "rating": 4.7,
+    "deliveryMins": 15,
+    "quantity": "5kg"
+  },
+  {
+    "id": "P011",
+    "name": "Basmati Rice 5kg",
+    "category": "atta",
+    "categoryName": "Atta Rice & Dal",
+    "price": 450,
+    "rating": 4.8,
+    "deliveryMins": 15,
+    "quantity": "5kg"
+  },
+  {
+    "id": "P012",
+    "name": "Toor Dal 1kg",
+    "category": "atta",
+    "categoryName": "Atta Rice & Dal",
+    "price": 160,
+    "rating": 4.7,
+    "deliveryMins": 15,
+    "quantity": "1kg"
+  },
+  {
+    "id": "P013",
+    "name": "Moong Dal 1kg",
+    "category": "atta",
+    "categoryName": "Atta Rice & Dal",
+    "price": 145,
+    "rating": 4.6,
+    "deliveryMins": 15,
+    "quantity": "1kg"
+  },
+  {
+    "id": "P014",
+    "name": "Masoor Dal 1kg",
+    "category": "atta",
+    "categoryName": "Atta Rice & Dal",
+    "price": 130,
+    "rating": 4.5,
+    "deliveryMins": 15,
+    "quantity": "1kg"
+  },
+  {
+    "id": "P015",
+    "name": "Chana Dal 1kg",
+    "category": "atta",
+    "categoryName": "Atta Rice & Dal",
+    "price": 110,
+    "rating": 4.5,
+    "deliveryMins": 15,
+    "quantity": "1kg"
+  },
+  {
+    "id": "P016",
+    "name": "Poha 1kg",
+    "category": "atta",
+    "categoryName": "Atta Rice & Dal",
+    "price": 75,
+    "rating": 4.4,
+    "deliveryMins": 15,
+    "quantity": "1kg"
+  },
+  {
+    "id": "P017",
+    "name": "Sunflower Oil 1L",
+    "category": "oil",
+    "categoryName": "Oil Ghee & Masala",
+    "price": 170,
+    "rating": 4.7,
+    "deliveryMins": 12,
+    "quantity": "1L"
+  },
+  {
+    "id": "P018",
+    "name": "Mustard Oil 1L",
+    "category": "oil",
+    "categoryName": "Oil Ghee & Masala",
+    "price": 190,
+    "rating": 4.6,
+    "deliveryMins": 12,
+    "quantity": "1L"
+  },
+  {
+    "id": "P019",
+    "name": "Amul Ghee 1L",
+    "category": "oil",
+    "categoryName": "Oil Ghee & Masala",
+    "price": 650,
+    "rating": 4.9,
+    "deliveryMins": 12,
+    "quantity": "1L"
+  },
+  {
+    "id": "P020",
+    "name": "Turmeric Powder",
+    "category": "oil",
+    "categoryName": "Oil Ghee & Masala",
+    "price": 60,
+    "rating": 4.7,
+    "deliveryMins": 12,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P021",
+    "name": "Red Chilli Powder",
+    "category": "oil",
+    "categoryName": "Oil Ghee & Masala",
+    "price": 75,
+    "rating": 4.6,
+    "deliveryMins": 12,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P022",
+    "name": "Coriander Powder",
+    "category": "oil",
+    "categoryName": "Oil Ghee & Masala",
+    "price": 55,
+    "rating": 4.5,
+    "deliveryMins": 12,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P023",
+    "name": "Garam Masala",
+    "category": "oil",
+    "categoryName": "Oil Ghee & Masala",
+    "price": 85,
+    "rating": 4.8,
+    "deliveryMins": 12,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P024",
+    "name": "Cumin Seeds",
+    "category": "oil",
+    "categoryName": "Oil Ghee & Masala",
+    "price": 90,
+    "rating": 4.6,
+    "deliveryMins": 12,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P025",
+    "name": "Amul Milk 1L",
+    "category": "dairy",
+    "categoryName": "Dairy Bread & Eggs",
+    "price": 68,
+    "rating": 4.8,
+    "deliveryMins": 10,
+    "quantity": "1L"
+  },
+  {
+    "id": "P026",
+    "name": "Brown Bread",
+    "category": "dairy",
+    "categoryName": "Dairy Bread & Eggs",
+    "price": 45,
+    "rating": 4.6,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P027",
+    "name": "White Bread",
+    "category": "dairy",
+    "categoryName": "Dairy Bread & Eggs",
+    "price": 40,
+    "rating": 4.5,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P028",
+    "name": "Eggs Pack of 12",
+    "category": "dairy",
+    "categoryName": "Dairy Bread & Eggs",
+    "price": 90,
+    "rating": 4.7,
+    "deliveryMins": 10,
+    "quantity": "Pack of 12"
+  },
+  {
+    "id": "P029",
+    "name": "Cheese Slices",
+    "category": "dairy",
+    "categoryName": "Dairy Bread & Eggs",
+    "price": 140,
+    "rating": 4.7,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P030",
+    "name": "Butter 500g",
+    "category": "dairy",
+    "categoryName": "Dairy Bread & Eggs",
+    "price": 280,
+    "rating": 4.8,
+    "deliveryMins": 10,
+    "quantity": "500g"
+  },
+  {
+    "id": "P031",
+    "name": "Paneer 200g",
+    "category": "dairy",
+    "categoryName": "Dairy Bread & Eggs",
+    "price": 95,
+    "rating": 4.7,
+    "deliveryMins": 10,
+    "quantity": "200g"
+  },
+  {
+    "id": "P032",
+    "name": "Curd 400g",
+    "category": "dairy",
+    "categoryName": "Dairy Bread & Eggs",
+    "price": 45,
+    "rating": 4.6,
+    "deliveryMins": 10,
+    "quantity": "400g"
+  },
+  {
+    "id": "P033",
+    "name": "Chocolate Cookies",
+    "category": "bakery",
+    "categoryName": "Bakery & Biscuits",
+    "price": 40,
+    "rating": 4.7,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P034",
+    "name": "Parle G",
+    "category": "bakery",
+    "categoryName": "Bakery & Biscuits",
+    "price": 10,
+    "rating": 4.9,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P035",
+    "name": "Good Day Biscuits",
+    "category": "bakery",
+    "categoryName": "Bakery & Biscuits",
+    "price": 35,
+    "rating": 4.8,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P036",
+    "name": "Rusk Toast",
+    "category": "bakery",
+    "categoryName": "Bakery & Biscuits",
+    "price": 50,
+    "rating": 4.6,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P037",
+    "name": "Cup Cake",
+    "category": "bakery",
+    "categoryName": "Bakery & Biscuits",
+    "price": 60,
+    "rating": 4.5,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P038",
+    "name": "Croissant",
+    "category": "bakery",
+    "categoryName": "Bakery & Biscuits",
+    "price": 80,
+    "rating": 4.4,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P039",
+    "name": "Chocolate Muffin",
+    "category": "bakery",
+    "categoryName": "Bakery & Biscuits",
+    "price": 70,
+    "rating": 4.6,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P040",
+    "name": "Digestive Biscuits",
+    "category": "bakery",
+    "categoryName": "Bakery & Biscuits",
+    "price": 55,
+    "rating": 4.7,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P041",
+    "name": "Almonds 500g",
+    "category": "cereal",
+    "categoryName": "Dry Fruits & Cereals",
+    "price": 450,
+    "rating": 4.8,
+    "deliveryMins": 12,
+    "quantity": "500g"
+  },
+  {
+    "id": "P042",
+    "name": "Cashews 500g",
+    "category": "cereal",
+    "categoryName": "Dry Fruits & Cereals",
+    "price": 550,
+    "rating": 4.8,
+    "deliveryMins": 12,
+    "quantity": "500g"
+  },
+  {
+    "id": "P043",
+    "name": "Walnuts 250g",
+    "category": "cereal",
+    "categoryName": "Dry Fruits & Cereals",
+    "price": 380,
+    "rating": 4.7,
+    "deliveryMins": 12,
+    "quantity": "250g"
+  },
+  {
+    "id": "P044",
+    "name": "Oats 1kg",
+    "category": "cereal",
+    "categoryName": "Dry Fruits & Cereals",
+    "price": 220,
+    "rating": 4.7,
+    "deliveryMins": 12,
+    "quantity": "1kg"
+  },
+  {
+    "id": "P045",
+    "name": "Cornflakes",
+    "category": "cereal",
+    "categoryName": "Dry Fruits & Cereals",
+    "price": 180,
+    "rating": 4.6,
+    "deliveryMins": 12,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P046",
+    "name": "Muesli",
+    "category": "cereal",
+    "categoryName": "Dry Fruits & Cereals",
+    "price": 320,
+    "rating": 4.7,
+    "deliveryMins": 12,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P047",
+    "name": "Raisins",
+    "category": "cereal",
+    "categoryName": "Dry Fruits & Cereals",
+    "price": 140,
+    "rating": 4.5,
+    "deliveryMins": 12,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P048",
+    "name": "Dates",
+    "category": "cereal",
+    "categoryName": "Dry Fruits & Cereals",
+    "price": 180,
+    "rating": 4.6,
+    "deliveryMins": 12,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P049",
+    "name": "Chicken Breast 500g",
+    "category": "meat",
+    "categoryName": "Chicken Meat & Fish",
+    "price": 280,
+    "rating": 4.8,
+    "deliveryMins": 15,
+    "quantity": "500g"
+  },
+  {
+    "id": "P050",
+    "name": "Chicken Curry Cut",
+    "category": "meat",
+    "categoryName": "Chicken Meat & Fish",
+    "price": 260,
+    "rating": 4.7,
+    "deliveryMins": 15,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P051",
+    "name": "Fish Fillet",
+    "category": "meat",
+    "categoryName": "Chicken Meat & Fish",
+    "price": 350,
+    "rating": 4.7,
+    "deliveryMins": 15,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P052",
+    "name": "Prawns",
+    "category": "meat",
+    "categoryName": "Chicken Meat & Fish",
+    "price": 420,
+    "rating": 4.6,
+    "deliveryMins": 15,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P053",
+    "name": "Mutton Curry Cut",
+    "category": "meat",
+    "categoryName": "Chicken Meat & Fish",
+    "price": 750,
+    "rating": 4.8,
+    "deliveryMins": 15,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P054",
+    "name": "Chicken Wings",
+    "category": "meat",
+    "categoryName": "Chicken Meat & Fish",
+    "price": 240,
+    "rating": 4.5,
+    "deliveryMins": 15,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P055",
+    "name": "Rohu Fish",
+    "category": "meat",
+    "categoryName": "Chicken Meat & Fish",
+    "price": 300,
+    "rating": 4.5,
+    "deliveryMins": 15,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P056",
+    "name": "Chicken Mince",
+    "category": "meat",
+    "categoryName": "Chicken Meat & Fish",
+    "price": 290,
+    "rating": 4.6,
+    "deliveryMins": 15,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P057",
+    "name": "Non Stick Pan",
+    "category": "kitchen",
+    "categoryName": "Kitchenware",
+    "price": 899,
+    "rating": 4.7,
+    "deliveryMins": 20,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P058",
+    "name": "Pressure Cooker",
+    "category": "kitchen",
+    "categoryName": "Kitchenware",
+    "price": 1499,
+    "rating": 4.8,
+    "deliveryMins": 20,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P059",
+    "name": "Knife Set",
+    "category": "kitchen",
+    "categoryName": "Kitchenware",
+    "price": 699,
+    "rating": 4.6,
+    "deliveryMins": 20,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P060",
+    "name": "Cutting Board",
+    "category": "kitchen",
+    "categoryName": "Kitchenware",
+    "price": 299,
+    "rating": 4.5,
+    "deliveryMins": 20,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P061",
+    "name": "Storage Container",
+    "category": "kitchen",
+    "categoryName": "Kitchenware",
+    "price": 399,
+    "rating": 4.6,
+    "deliveryMins": 20,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P062",
+    "name": "Water Bottle",
+    "category": "kitchen",
+    "categoryName": "Kitchenware",
+    "price": 249,
+    "rating": 4.5,
+    "deliveryMins": 20,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P063",
+    "name": "Lays Chips",
+    "category": "chips",
+    "categoryName": "Chips & Namkeen",
+    "price": 20,
+    "rating": 4.8,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P064",
+    "name": "Kurkure",
+    "category": "chips",
+    "categoryName": "Chips & Namkeen",
+    "price": 20,
+    "rating": 4.7,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P065",
+    "name": "Haldiram Bhujia",
+    "category": "chips",
+    "categoryName": "Chips & Namkeen",
+    "price": 60,
+    "rating": 4.8,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P066",
+    "name": "Nachos",
+    "category": "chips",
+    "categoryName": "Chips & Namkeen",
+    "price": 99,
+    "rating": 4.6,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P067",
+    "name": "Dairy Milk",
+    "category": "chocolate",
+    "categoryName": "Sweets & Chocolates",
+    "price": 50,
+    "rating": 4.9,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P068",
+    "name": "KitKat",
+    "category": "chocolate",
+    "categoryName": "Sweets & Chocolates",
+    "price": 30,
+    "rating": 4.8,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P069",
+    "name": "Ferrero Rocher",
+    "category": "chocolate",
+    "categoryName": "Sweets & Chocolates",
+    "price": 450,
+    "rating": 4.9,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P070",
+    "name": "Gulab Jamun Mix",
+    "category": "chocolate",
+    "categoryName": "Sweets & Chocolates",
+    "price": 120,
+    "rating": 4.6,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P071",
+    "name": "Coca Cola 1L",
+    "category": "drinks",
+    "categoryName": "Drinks & Juices",
+    "price": 60,
+    "rating": 4.8,
+    "deliveryMins": 10,
+    "quantity": "1L"
+  },
+  {
+    "id": "P072",
+    "name": "Pepsi 1L",
+    "category": "drinks",
+    "categoryName": "Drinks & Juices",
+    "price": 58,
+    "rating": 4.7,
+    "deliveryMins": 10,
+    "quantity": "1L"
+  },
+  {
+    "id": "P073",
+    "name": "Orange Juice",
+    "category": "drinks",
+    "categoryName": "Drinks & Juices",
+    "price": 110,
+    "rating": 4.6,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P074",
+    "name": "Mango Juice",
+    "category": "drinks",
+    "categoryName": "Drinks & Juices",
+    "price": 120,
+    "rating": 4.7,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P075",
+    "name": "Tea Powder",
+    "category": "tea",
+    "categoryName": "Tea Coffee & More",
+    "price": 220,
+    "rating": 4.8,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P076",
+    "name": "Instant Coffee",
+    "category": "tea",
+    "categoryName": "Tea Coffee & More",
+    "price": 350,
+    "rating": 4.7,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P077",
+    "name": "Green Tea",
+    "category": "tea",
+    "categoryName": "Tea Coffee & More",
+    "price": 180,
+    "rating": 4.6,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P078",
+    "name": "Hot Chocolate",
+    "category": "tea",
+    "categoryName": "Tea Coffee & More",
+    "price": 240,
+    "rating": 4.6,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P079",
+    "name": "Instant Noodles",
+    "category": "instant",
+    "categoryName": "Instant Food",
+    "price": 20,
+    "rating": 4.8,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P080",
+    "name": "Pasta Cup",
+    "category": "instant",
+    "categoryName": "Instant Food",
+    "price": 50,
+    "rating": 4.6,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P081",
+    "name": "Protein Shake",
+    "category": "health",
+    "categoryName": "Protein & Fitness",
+    "price": 899,
+    "rating": 4.7,
+    "deliveryMins": 12,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P082",
+    "name": "Whey Protein",
+    "category": "health",
+    "categoryName": "Protein & Fitness",
+    "price": 2499,
+    "rating": 4.8,
+    "deliveryMins": 12,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P083",
+    "name": "Chocolate Ice Cream",
+    "category": "icecream",
+    "categoryName": "Ice Creams & Desserts",
+    "price": 180,
+    "rating": 4.8,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  },
+  {
+    "id": "P084",
+    "name": "Vanilla Ice Cream",
+    "category": "icecream",
+    "categoryName": "Ice Creams & Desserts",
+    "price": 170,
+    "rating": 4.7,
+    "deliveryMins": 10,
+    "quantity": "1 pack"
+  }
+]
