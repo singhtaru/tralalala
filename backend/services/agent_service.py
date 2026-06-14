@@ -114,8 +114,14 @@ def run_agent(query, session_id="default"):
 
 
 def _build_search_query(intent):
+    goal = intent.get("goal", "").lower()
     parts = [intent.get("goal"), intent.get("occasion"), intent.get("category")]
-    return " ".join(part for part in parts if part and part != "general")
+    query = " ".join(part for part in parts if part and part != "general")
+    if "yogurt" in goal or "yogurt" in query:
+        query += " curd"
+    if "curd" in goal or "curd" in query:
+        query += " yogurt"
+    return query
 
 
 def ranking_constraints_from_intent(intent):
@@ -127,6 +133,46 @@ def ranking_constraints_from_intent(intent):
         "group_size": intent["group_size"],
         "constraints": intent["constraints"],
     }
+
+
+def _get_refinement_filters(intent, recommended_items):
+    category = intent.get("category", "general").lower()
+    occasion = intent.get("occasion", "").lower() if intent.get("occasion") else ""
+    goal = intent.get("goal", "").lower() if intent.get("goal") else ""
+    items = recommended_items or []
+    
+    if category == "general" and items:
+        category = items[0].get("category", "general").lower()
+
+    if "butter" in goal or occasion == "butter":
+        return ["Premium Quality", "Budget Friendly", "Best Seller", "Fast Delivery", "Organic"]
+        
+    if "yogurt" in goal or "curd" in goal or occasion == "yogurt":
+        return ["High Protein", "Low Cost", "Premium", "Lactose Free", "Fast Delivery", "Best Seller"]
+        
+    if "milk" in goal:
+        return ["Lactose Free", "High Protein", "Organic", "Budget Friendly"]
+
+    if any("butter" in p.get("name", "").lower() for p in items):
+        return ["Premium Quality", "Budget Friendly", "Best Seller", "Fast Delivery", "Organic"]
+        
+    if any("yogurt" in p.get("name", "").lower() or "curd" in p.get("name", "").lower() for p in items):
+        return ["High Protein", "Low Cost", "Premium", "Lactose Free", "Fast Delivery", "Best Seller"]
+        
+    if any("milk" in p.get("name", "").lower() for p in items):
+        return ["Lactose Free", "High Protein", "Organic", "Budget Friendly"]
+
+    if category in {"snacks", "chips", "chocolate", "icecream", "bakery"}:
+        return ["Healthy", "Low Calorie", "High Protein", "Budget Friendly", "Premium"]
+
+    if category in {"dairy", "breakfast"}:
+        return ["Lactose Free", "High Protein", "Organic", "Budget Friendly"]
+    if category in {"drinks", "tea"}:
+        return ["Lactose Free", "Healthy", "Organic", "Budget Friendly", "Fast Delivery"]
+    if category in {"fruits", "vegetables"}:
+        return ["Organic", "Fresh", "Budget Friendly", "Best Seller"]
+        
+    return ["Budget Friendly", "Premium Quality", "Best Seller", "Fast Delivery"]
 
 
 def _build_response(
@@ -143,6 +189,7 @@ def _build_response(
     reason,
     recommended_items=None,
 ):
+    rec_items = recommended_items or []
     return {
         "user_query": query,
         "intent": intent,
@@ -151,11 +198,12 @@ def _build_response(
         "matched_products": matched_products,
         "ranked_products": ranked_products,
         "candidate_baskets": candidate_baskets,
-        "recommended_items": recommended_items or [],
+        "recommended_items": rec_items,
         "cart": cart,
         "total": total,
         "message": message,
         "reason": reason,
+        "refinement_filters": _get_refinement_filters(intent, rec_items),
     }
 
 
@@ -178,23 +226,41 @@ def _merge_with_memory(intent, previous_state, current_query):
         return intent
 
     previous_intent = previous_state.get("intent", {})
-    if not intent.get("occasion") and previous_intent.get("occasion"):
-        intent["occasion"] = previous_intent["occasion"]
+    prev_category = previous_intent.get("category")
+    new_category = intent.get("category")
 
-    if not intent.get("category") or intent.get("category") == "general":
-        intent["category"] = previous_intent.get("category", intent.get("category"))
+    # Clear memory if category shifts explicitly
+    category_shifted = (
+        new_category and new_category != "general" 
+        and prev_category and prev_category != "general" 
+        and prev_category != new_category
+    )
 
-    if not intent.get("budget"):
-        intent["budget"] = previous_intent.get("budget")
+    if category_shifted:
+        # Do not inherit old occasion or budget
+        if not intent.get("occasion"):
+            intent["occasion"] = None
+        if not intent.get("budget"):
+            intent["budget"] = None
+    else:
+        if not intent.get("occasion") and previous_intent.get("occasion"):
+            intent["occasion"] = previous_intent["occasion"]
+
+        if not intent.get("category") or intent.get("category") == "general":
+            intent["category"] = previous_intent.get("category", intent.get("category"))
+
+        if not intent.get("budget"):
+            intent["budget"] = previous_intent.get("budget")
 
     lowered_query = current_query.lower()
-    if any(phrase in lowered_query for phrase in ["instead", "replace", "rather than"]):
+    if category_shifted:
+        intent["constraints"] = intent.get("constraints") or []
+    elif any(phrase in lowered_query for phrase in ["instead", "replace", "rather than"]):
         intent["constraints"] = intent.get("constraints") or []
     else:
         merged_constraints = list(dict.fromkeys((previous_intent.get("constraints") or []) + (intent.get("constraints") or [])))
         intent["constraints"] = merged_constraints
 
-    lowered_query = current_query.lower()
     if any(term in lowered_query for term in ["healthier", "healthy", "lighter", "less sugar"]):
         if "healthy" not in intent["constraints"]:
             intent["constraints"].append("healthy")

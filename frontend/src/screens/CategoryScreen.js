@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import ProductCard from "../components/catalog/ProductCard";
 import ScreenTopBar from "../components/common/ScreenTopBar";
-import { categorySections, products } from "../data/products";
+import { categorySections, products as localProducts } from "../data/products";
 import { colors } from "../theme/colors";
 
 export default function CategoryScreen({
@@ -11,7 +11,8 @@ export default function CategoryScreen({
   getQuantity,
   goBack,
   openProduct,
-  removeFromCart
+  removeFromCart,
+  products = localProducts
 }) {
   const sideCategories = categorySections.flatMap((section) => section.tiles).slice(0, 9);
   const [activeCategory, setActiveCategory] = useState(category || sideCategories[0]);

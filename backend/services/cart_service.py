@@ -22,6 +22,19 @@ def add_to_cart(product_id):
     return cart_item
 
 
+def remove_from_cart(product_id):
+    existing_item = next((item for item in _CART_ITEMS if item["id"] == product_id), None)
+    if not existing_item:
+        return None
+
+    if existing_item.get("quantity", 1) > 1:
+        existing_item["quantity"] -= 1
+        return existing_item
+
+    _CART_ITEMS.remove(existing_item)
+    return {"id": product_id, "quantity": 0}
+
+
 def get_cart():
     total = round(sum(item["price"] * item.get("quantity", 1) for item in _CART_ITEMS), 2)
     total_quantity = sum(item.get("quantity", 1) for item in _CART_ITEMS)

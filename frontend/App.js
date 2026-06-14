@@ -25,7 +25,16 @@ import AddFundsScreen from "./src/screens/AddFundsScreen";
 import GooglePayScreen from "./src/screens/GooglePayScreen";
 import IosKeyboard from "./src/components/common/IosKeyboard";
 import IosNotification from "./src/components/common/IosNotification";
-import { products } from "./src/data/products";
+import { products as localProducts } from "./src/data/products";
+import {
+  fetchProducts,
+  fetchCart,
+  addToBackendCart,
+  removeFromBackendCart,
+  clearBackendCart,
+  checkoutBackendCart,
+  normalizeBackendProduct
+} from "./src/services/api";
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -44,8 +53,15 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(products[0]);
+  const [products, setProducts] = useState(localProducts);
+  const [selectedProduct, setSelectedProduct] = useState(localProducts[0]);
   const [cart, setCart] = useState([]);
+  const [assistantStartListening, setAssistantStartListening] = useState(false);
+
+  const triggerVoiceAssistant = () => {
+    setAssistantStartListening(true);
+    setScreen("assistant");
+  };
   
   // Wallet Balances
   const [walletBalance, setWalletBalance] = useState(700);
@@ -107,7 +123,35 @@ export default function App() {
     });
   };
 
-  const addToCart = (product) => {
+  useEffect(() => {
+    async function loadCatalog() {
+      const backendProds = await fetchProducts();
+      if (backendProds && backendProds.length > 0) {
+        const normalized = backendProds.map(p => normalizeBackendProduct(p, localProducts));
+        setProducts(normalized);
+      }
+    }
+    loadCatalog();
+  }, []);
+
+  useEffect(() => {
+    async function loadCart() {
+      const backendCart = await fetchCart();
+      if (backendCart && backendCart.items) {
+        const mappedItems = backendCart.items.map(item => {
+          const norm = normalizeBackendProduct(item, localProducts);
+          return {
+            ...norm,
+            qty: item.quantity || 1
+          };
+        });
+        setCart(mappedItems);
+      }
+    }
+    loadCart();
+  }, [products]);
+
+  const addToCart = async (product) => {
     setCart((items) => {
       const existing = items.find((item) => item.id === product.id);
       if (existing) {
@@ -117,9 +161,10 @@ export default function App() {
       }
       return [...items, { ...product, qty: 1 }];
     });
+    await addToBackendCart(product.id);
   };
 
-  const removeFromCart = (product) => {
+  const removeFromCart = async (product) => {
     setCart((items) => {
       const existing = items.find((item) => item.id === product.id);
       if (!existing) return items;
@@ -130,6 +175,15 @@ export default function App() {
         item.id === product.id ? { ...item, qty: item.qty - 1 } : item
       );
     });
+    await removeFromBackendCart(product.id);
+  };
+
+  const changeQuantity = (item, delta) => {
+    if (delta > 0) {
+      addToCart(item);
+    } else {
+      removeFromCart(item);
+    }
   };
 
   const getQuantity = (productId) => {
@@ -152,7 +206,28 @@ export default function App() {
     [cart]
   );
 
-  const handlePlaceOrder = (method) => {
+  const handleAddGeneratedCart = async (items, isEmergency) => {
+    try {
+      await clearBackendCart();
+      for (const item of items) {
+        const qty = item.quantity || 1;
+        for (let i = 0; i < qty; i++) {
+          await addToBackendCart(item.id);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setCart(items.map(item => ({ ...item, qty: item.quantity || 1 })));
+    if (isEmergency) {
+      setPaymentMethod("Emergency Deposit");
+    } else {
+      setPaymentMethod("Amazon Wallet");
+    }
+    setScreen("payment");
+  };
+
+  const handlePlaceOrder = async (method) => {
     const grandTotal = Math.max(0, total + 19 + 6 - 25);
     
     if (method === "Google Pay") {
@@ -160,6 +235,12 @@ export default function App() {
       setGpayFlow("checkout");
       setScreen("google_pay");
       return;
+    }
+
+    try {
+      await checkoutBackendCart();
+    } catch (e) {
+      console.error(e);
     }
 
     // Deduct standard balance or emergency deposit
@@ -183,7 +264,15 @@ export default function App() {
     setScreen("tracking");
   };
 
-  const handleReorderPastItems = (items) => {
+  const handleReorderPastItems = async (items) => {
+    try {
+      await clearBackendCart();
+      for (const item of items) {
+        await addToBackendCart(item.id);
+      }
+    } catch (e) {
+      console.error(e);
+    }
     setCart(items.map(item => ({ ...item, qty: 1 })));
     setScreen("cart");
   };
@@ -223,7 +312,7 @@ export default function App() {
   };
 
   // Google Pay recharge handlers
-  const handleGooglePaySuccess = (amount) => {
+  const handleGooglePaySuccess = async (amount) => {
     if (gpayFlow === "onboarding") {
       if (tempOnboardingData) {
         setCustomer(tempOnboardingData.customer);
@@ -236,6 +325,11 @@ export default function App() {
       setScreen("home");
       triggerNotification("Emergency Deposit", `₹${amount} emergency deposit added successfully!`);
     } else if (gpayFlow === "checkout") {
+      try {
+        await checkoutBackendCart();
+      } catch (e) {
+        console.error(e);
+      }
       const grandTotal = amount;
       const newOrder = {
         id: "ord_" + Date.now(),
@@ -341,6 +435,8 @@ export default function App() {
                 setSearchQuery={setSearchQuery}
                 setScreen={setScreen}
                 onReorderPastItems={handleReorderPastItems}
+                products={products}
+                triggerVoiceAssistant={triggerVoiceAssistant}
               />
             )}
             {screen === "category" && (
@@ -351,6 +447,7 @@ export default function App() {
                 goBack={() => setScreen("home")}
                 openProduct={openProduct}
                 removeFromCart={removeFromCart}
+                products={products}
               />
             )}
             {screen === "product" && (
@@ -361,11 +458,13 @@ export default function App() {
                 product={selectedProduct}
                 removeFromCart={removeFromCart}
                 setSelectedProduct={setSelectedProduct}
+                products={products}
               />
             )}
             {screen === "cart" && (
               <CartScreen
                 cart={cart}
+                changeQuantity={changeQuantity}
                 goBack={() => setScreen("home")}
                 onCheckout={() => setScreen("payment")}
                 total={total}
@@ -392,15 +491,7 @@ export default function App() {
             {screen === "assistant" && (
               <AssistantScreen
                 addToCart={addToCart}
-                addGeneratedCart={(items, isEmergency) => {
-                  setCart(items.map(item => ({ ...item, qty: 1 })));
-                  if (isEmergency) {
-                    setPaymentMethod("Emergency Deposit");
-                  } else {
-                    setPaymentMethod("Amazon Wallet");
-                  }
-                  setScreen("payment");
-                }}
+                addGeneratedCart={handleAddGeneratedCart}
                 getQuantity={getQuantity}
                 goBack={() => setScreen("home")}
                 openProduct={openProduct}
@@ -412,6 +503,9 @@ export default function App() {
                 }}
                 focusInput={focusInput}
                 hideKeyboard={hideKeyboard}
+                startListening={assistantStartListening}
+                onStopListening={() => setAssistantStartListening(false)}
+                products={products}
               />
             )}
             {screen === "profile" && (
@@ -451,6 +545,8 @@ export default function App() {
                 setRecentSearches={setRecentSearches}
                 focusInput={focusInput}
                 hideKeyboard={hideKeyboard}
+                products={products}
+                triggerVoiceAssistant={triggerVoiceAssistant}
               />
             )}
             {screen === "reorder" && (
@@ -468,15 +564,8 @@ export default function App() {
                 goBack={() => setScreen("home")}
                 openProduct={openProduct}
                 removeFromCart={removeFromCart}
-                addGeneratedCart={(items, isEmergency) => {
-                  setCart(items.map(item => ({ ...item, qty: 1 })));
-                  if (isEmergency) {
-                    setPaymentMethod("Emergency Deposit");
-                  } else {
-                    setPaymentMethod("Amazon Wallet");
-                  }
-                  setScreen("payment");
-                }}
+                addGeneratedCart={handleAddGeneratedCart}
+                products={products}
               />
             )}
             {screen === "wallet" && (

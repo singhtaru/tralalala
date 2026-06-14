@@ -9,7 +9,12 @@ import requests
 PRODUCTS_FILE = Path(__file__).resolve().parent.parent / "products.json"
 DUMMYJSON_BASE_URL = os.getenv("DUMMYJSON_BASE_URL", "https://dummyjson.com")
 
-FOOD_CATEGORIES = {"groceries", "snacks", "drinks", "instant food", "beverages"}
+FOOD_CATEGORIES = {
+    "groceries", "snacks", "drinks", "instant food", "beverages", "first-aid", "first_aid", 
+    "baby", "emergency", "party_food", "breakfast", "fruits", "atta", "oil", "dairy", 
+    "bakery", "cereal", "meat", "chips", "chocolate", "tea", "instant", "health", "icecream",
+    "general"
+}
 NON_FOOD_CATEGORIES = {
     "beauty",
     "skin-care",
@@ -76,6 +81,12 @@ PRODUCT_TAG_KEYWORDS = {
     "sweet_snack": ["cookie", "cookies", "chocolate", "brownie", "sweet"],
     "pet_food": ["cat food", "dog food", "pet food"],
     "non_food": ["lotion", "cream", "serum", "shampoo", "soap", "perfume", "moisturizer"],
+    "first_aid": ["bandage", "bandages", "cotton", "antiseptic", "dettol", "tape", "thermometer", "medicine"],
+    "baby": ["diaper", "diapers", "wipes", "baby"],
+    "emergency": ["led", "bulb", "torch", "light", "rechargeable"],
+    "party_food": ["plates", "disposable", "party", "guests"],
+    "breakfast": ["eggs", "milk", "oats", "yogurt", "bread", "butter", "curd", "dahi"],
+    "butter": ["butter"],
 }
 
 OCCASION_PRODUCT_TAGS = {
@@ -84,6 +95,10 @@ OCCASION_PRODUCT_TAGS = {
     "study session": {"healthy_snack": 20, "drink": 15, "instant_food": 10},
     "late night": {"instant_food": 25, "snack": 15, "drink": 10},
     "gaming": {"snack": 25, "drink": 20},
+    "first aid emergency": {"first_aid": 50},
+    "guest preparation": {"party_food": 40, "snack": 20, "drink": 20},
+    "quick healthy breakfast": {"breakfast": 50, "healthy_snack": 15},
+    "butter": {"butter": 50},
 }
 
 CONSTRAINT_TAG_BONUSES = {
@@ -102,6 +117,11 @@ BASKET_TEMPLATES = {
     "instant food": [["instant_food"], ["instant_food"], ["drink", "healthy_drink"]],
     "drinks": [["drink", "healthy_drink"], ["drink", "healthy_drink"]],
     "snacks": [["snack", "healthy_snack"], ["snack", "healthy_snack"], ["drink", "healthy_drink"]],
+    "first aid emergency": [["first_aid"], ["first_aid"], ["first_aid"], ["first_aid"]],
+    "guest preparation": [["party_food"], ["snack"], ["drink"], ["sweet_snack"]],
+    "quick healthy breakfast": [["breakfast"], ["breakfast"], ["breakfast"], ["breakfast"]],
+    "butter": [["butter"]],
+    "yogurt": [["breakfast"]],
 }
 
 CATEGORY_TO_TAGS = {
@@ -109,9 +129,12 @@ CATEGORY_TO_TAGS = {
     "healthy_snacks": {"healthy_snack", "healthy_drink", "snack"},
     "drinks": {"drink", "healthy_drink"},
     "instant_food": {"instant_food", "drink", "healthy_drink"},
-    "breakfast": {"healthy_snack", "instant_food", "healthy_drink", "snack"},
-    "party_food": {"snack", "healthy_snack", "drink", "sweet_snack"},
-    "general": {"snack", "healthy_snack", "drink", "healthy_drink", "instant_food", "sweet_snack"},
+    "breakfast": {"breakfast", "healthy_snack", "instant_food", "healthy_drink", "snack"},
+    "party_food": {"party_food", "snack", "healthy_snack", "drink", "sweet_snack"},
+    "first_aid": {"first_aid"},
+    "baby": {"baby"},
+    "emergency": {"emergency"},
+    "general": {"snack", "healthy_snack", "drink", "healthy_drink", "instant_food", "sweet_snack", "first_aid", "baby", "emergency", "party_food", "breakfast", "butter"},
 }
 
 
@@ -121,18 +144,34 @@ def _load_local_products():
 
 
 def _normalize_product(product, source_name="dummyjson"):
-    product_id = int(product["id"])
-    if source_name == "dummyjson":
-        product_id += 10000
+    product_id = str(product["id"])
+    name = product.get("name") or product.get("title", "Unknown Product")
+    rating = float(product.get("rating", 4.5))
+    delivery_mins = int(product.get("deliveryMins", 15))
+    
+    # Generate deterministic metadata based on name hash
+    h = abs(hash(name))
+    purchase_count = (h % 450) + 50
+    popularity = (h % 90) + 10
+    repeat_purchases = int(purchase_count * ((h % 30) + 10) / 100.0)
+    brand = product.get("brand") or name.split()[0]
+    thumbnail = product.get("thumbnail") or product.get("imageUrl") or "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=500&q=80"
 
     return {
         "id": product_id,
-        "name": product.get("name") or product.get("title", "Unknown Product"),
+        "name": name,
         "category": product.get("category", "general"),
-        "price": float(product.get("price", 0)),
-        "description": product.get("description"),
-        "thumbnail": product.get("thumbnail"),
+        "price": float(product.get("price", 0.0)),
+        "description": product.get("description", ""),
+        "thumbnail": thumbnail,
+        "imageUrl": thumbnail,
         "source": product.get("source", source_name),
+        "brand": brand,
+        "rating": rating,
+        "deliveryMins": delivery_mins,
+        "purchase_count": purchase_count,
+        "popularity": popularity,
+        "repeat_purchases": repeat_purchases,
     }
 
 
@@ -173,15 +212,26 @@ def _infer_product_tags(product):
             tags.add(tag)
 
     category = product.get("category", "").lower()
-    if category in {"snacks", "groceries"}:
-        if "instant food" not in category and "instant_food" not in tags:
-            tags.add("snack")
-    if category == "drinks":
+    if category in {"snacks", "chips", "bakery", "chocolate", "icecream"}:
+        tags.add("snack")
+    if category in {"drinks", "tea"}:
         tags.add("drink")
-    if category == "instant_food":
+    if category in {"instant", "instant_food", "instant food"}:
         tags.add("instant_food")
-    if category in NON_FOOD_CATEGORIES:
-        tags.add("non_food")
+    if category in {"first-aid", "first_aid"}:
+        tags.add("first_aid")
+    if category == "baby":
+        tags.add("baby")
+    if category == "emergency":
+        tags.add("emergency")
+    if category == "party_food":
+        tags.add("party_food")
+    if category in {"dairy", "breakfast"}:
+        tags.add("breakfast")
+    if category in {"cereal", "health"}:
+        tags.add("healthy_snack")
+    if "healthy" in product_text:
+        tags.add("healthy_snack")
 
     return tags
 
@@ -218,19 +268,29 @@ def _allowed_tags_for_request(user_constraints):
     category = user_constraints.get("category")
     occasion = user_constraints.get("occasion")
 
+    if occasion == "first aid emergency" or occasion == "injury" or category in {"first-aid", "first_aid"}:
+        return {"first_aid"}
+    if occasion == "guest preparation" or category == "party_food":
+        return {"party_food", "snack", "drink", "sweet_snack"}
+    if occasion == "butter" or category == "butter":
+        return {"butter", "breakfast", "general"}
+    if occasion == "yogurt" or category == "yogurt":
+        return {"breakfast", "general"}
+    if occasion == "quick healthy breakfast" or category == "breakfast":
+        return {"breakfast", "healthy_snack", "drink"}
+    if category == "baby":
+        return {"baby"}
+    if category == "emergency":
+        return {"emergency"}
     if category == "instant_food":
         return {"instant_food", "drink", "healthy_drink"}
     if category == "drinks":
         return {"drink", "healthy_drink"}
     if category == "healthy_snacks":
         return {"healthy_snack", "healthy_drink", "snack"}
-    if category == "breakfast":
-        return {"healthy_snack", "instant_food", "healthy_drink", "snack"}
-    if category == "party_food":
-        return {"snack", "healthy_snack", "drink", "sweet_snack"}
     if category == "snacks" or occasion == "movie night":
         return {"snack", "healthy_snack", "drink", "healthy_drink", "sweet_snack"}
-    return {"snack", "healthy_snack", "drink", "healthy_drink", "instant_food", "sweet_snack"}
+    return {"snack", "healthy_snack", "drink", "healthy_drink", "instant_food", "sweet_snack", "first_aid", "baby", "emergency", "party_food", "breakfast", "butter"}
 
 
 def _matches_request_type(product, user_constraints):
@@ -256,19 +316,6 @@ def get_products():
         }
         for product in _load_local_products()
     ]
-
-    try:
-        response = requests.get(
-            f"{DUMMYJSON_BASE_URL}/products?limit=0",
-            timeout=10,
-        )
-        response.raise_for_status()
-        payload = response.json()
-        remote_products = [_normalize_product(product, source_name="dummyjson") for product in payload.get("products", [])]
-        products.extend(remote_products)
-    except requests.RequestException:
-        pass
-
     return _dedupe_products(products)
 
 
@@ -296,6 +343,18 @@ def search_products(query, user_constraints=None):
             semantic_bonus += 35
         if user_constraints.get("occasion") == "movie night" and tags & {"snack", "healthy_snack", "drink"}:
             semantic_bonus += 18
+        if (user_constraints.get("occasion") == "first aid emergency" or user_constraints.get("occasion") == "injury" or user_constraints.get("category") in {"first-aid", "first_aid"}) and "first_aid" in tags:
+            semantic_bonus += 50
+        if (user_constraints.get("occasion") == "guest preparation" or user_constraints.get("category") == "party_food") and tags & {"party_food", "snack", "drink", "sweet_snack"}:
+            semantic_bonus += 35
+        if (user_constraints.get("occasion") == "quick healthy breakfast" or user_constraints.get("category") == "breakfast") and "breakfast" in tags:
+            semantic_bonus += 40
+        if (user_constraints.get("occasion") == "butter" or user_constraints.get("category") == "butter") and "butter" in tags:
+            semantic_bonus += 50
+        if user_constraints.get("category") == "baby" and "baby" in tags:
+            semantic_bonus += 50
+        if user_constraints.get("category") == "emergency" and "emergency" in tags:
+            semantic_bonus += 50
 
         if "healthy" in user_constraints.get("constraints", []) and tags & {"healthy_snack", "healthy_drink"}:
             semantic_bonus += 18
@@ -321,13 +380,34 @@ def search_products(query, user_constraints=None):
 
 
 def _score_relevance(product, user_constraints):
-    goal_tokens = set(_tokenize(user_constraints.get("goal", "")))
+    goal = user_constraints.get("goal", "").lower()
+    goal_tokens = set(_tokenize(goal))
+    
+    # Expand goal tokens for synonym matching
+    if "yogurt" in goal_tokens or "yogurt" in goal:
+        goal_tokens.add("curd")
+        goal_tokens.add("yogurt")
+    if "curd" in goal_tokens or "curd" in goal:
+        goal_tokens.add("yogurt")
+        goal_tokens.add("curd")
+
     product_tokens = set(_tokenize(_product_text(product)))
     tags = _infer_product_tags(product)
     source_bonus = 10.0 if product.get("source") == "local-fallback" else 0.0
 
     overlap = len(goal_tokens & product_tokens) * 12
     tag_bonus = 0
+    
+    # Occasion exact match bonus
+    occasion = user_constraints.get("occasion")
+    if occasion:
+        occ_lower = occasion.lower()
+        prod_name_lower = product.get("name", "").lower()
+        if occ_lower == "yogurt" and any(x in prod_name_lower for x in ["yogurt", "curd", "dahi"]):
+            tag_bonus += 50
+        elif occ_lower in prod_name_lower:
+            tag_bonus += 50
+
     if user_constraints.get("category") == "instant_food" and "instant_food" in tags:
         tag_bonus += 35
     if user_constraints.get("category") == "snacks" and tags & {"snack", "healthy_snack"}:
@@ -386,6 +466,37 @@ def _score_constraints(product, user_constraints):
     return max(-60.0, min(60.0, constraint_score)), matched_constraints
 
 
+def _calculate_ranking_base_score(product):
+    # Rating: 0.0 to 5.0 -> normalize to 0-10
+    rating_score = float(product.get("rating", 4.5)) * 2.0
+    
+    # Purchase count: 50 to 500 -> normalize to 0-10
+    purchase_count = float(product.get("purchase_count", 100))
+    purchase_score = (purchase_count / 500.0) * 10.0
+    
+    # Popularity: 10 to 100 -> normalize to 0-10
+    popularity = float(product.get("popularity", 50))
+    popularity_score = (popularity / 100.0) * 10.0
+    
+    # Repeat purchases: 10 to 150 -> normalize to 0-10
+    repeat_purchases = float(product.get("repeat_purchases", 20))
+    repeat_score = (repeat_purchases / 150.0) * 10.0
+    
+    # Delivery speed: lower is better (8 mins -> 10, 20 mins -> 0)
+    delivery_mins = float(product.get("deliveryMins", 15))
+    delivery_score = max(0.0, (20.0 - delivery_mins) / 12.0 * 10.0)
+    
+    # Weighted sum: Rating (30%), Purchase Count (20%), Popularity (20%), Repeat Purchases (10%), Delivery Speed (20%)
+    base_score = (
+        (rating_score * 0.3) + 
+        (purchase_score * 0.2) + 
+        (popularity_score * 0.2) + 
+        (repeat_score * 0.1) + 
+        (delivery_score * 0.2)
+    )
+    return base_score
+
+
 def rank_products(products, user_constraints):
     ranked = []
 
@@ -394,7 +505,9 @@ def rank_products(products, user_constraints):
         budget_score = _score_budget(product, user_constraints)
         occasion_score = _score_occasion(product, user_constraints)
         constraint_score, matched_constraints = _score_constraints(product, user_constraints)
-        total_score = round(relevance_score + budget_score + occasion_score + constraint_score, 2)
+        
+        base_score = _calculate_ranking_base_score(product)
+        total_score = round(relevance_score + budget_score + occasion_score + constraint_score + base_score, 2)
 
         ranked.append(
             {
@@ -405,6 +518,7 @@ def rank_products(products, user_constraints):
                     "budget": round(budget_score, 2),
                     "occasion": round(occasion_score, 2),
                     "constraint": round(constraint_score, 2),
+                    "base_ranking": round(base_score, 2),
                     "total": total_score,
                 },
                 "constraint_matches": matched_constraints,
@@ -512,6 +626,17 @@ def build_candidate_baskets(ranked_products, user_constraints, limit=3):
 
 
 def _select_basket_template(user_constraints):
+    occasion = user_constraints.get("occasion")
+    if occasion == "first aid emergency" or occasion == "injury":
+        return BASKET_TEMPLATES["first aid emergency"]
+    if occasion == "guest preparation":
+        return BASKET_TEMPLATES["guest preparation"]
+    if occasion == "quick healthy breakfast":
+        return BASKET_TEMPLATES["quick healthy breakfast"]
+    if occasion == "butter":
+        return BASKET_TEMPLATES["butter"]
+    if occasion == "yogurt":
+        return BASKET_TEMPLATES["yogurt"]
     if user_constraints.get("occasion") == "movie night" and "healthy" in user_constraints.get("constraints", []):
         return BASKET_TEMPLATES["healthy movie night"]
     if user_constraints.get("occasion") == "movie night":

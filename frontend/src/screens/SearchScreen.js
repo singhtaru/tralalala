@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import ProductCard from "../components/catalog/ProductCard";
-import { products } from "../data/products";
+import { products as localProducts } from "../data/products";
 import { colors } from "../theme/colors";
 
 const trendingIds = ["P071", "P062", "P072", "P030", "P079", "P063"];
@@ -19,7 +19,9 @@ export default function SearchScreen({
   setQuery,
   setRecentSearches,
   focusInput,
-  hideKeyboard
+  hideKeyboard,
+  products = localProducts,
+  triggerVoiceAssistant
 }) {
   const normalizedQuery = query.trim().toLowerCase();
   
@@ -91,7 +93,9 @@ export default function SearchScreen({
           showSoftInputOnFocus={false} // Prevents native soft keyboard
           style={styles.searchInput}
         />
-        <Ionicons name="mic" size={23} color={colors.ink} />
+        <Pressable onPress={triggerVoiceAssistant} style={{ padding: 4 }}>
+          <Ionicons name="mic" size={23} color={colors.ink} />
+        </Pressable>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>

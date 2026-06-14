@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import ProductImage from "../components/catalog/ProductImage";
 import ProductCard from "../components/catalog/ProductCard";
 import ScreenTopBar from "../components/common/ScreenTopBar";
-import { products } from "../data/products";
+import { products as localProducts } from "../data/products";
 import { colors } from "../theme/colors";
 
 export default function ProductDetailScreen({
@@ -12,7 +12,8 @@ export default function ProductDetailScreen({
   goBack,
   product,
   removeFromCart,
-  setSelectedProduct
+  setSelectedProduct,
+  products = localProducts
 }) {
   const [alternative, setAlternative] = useState("Best Seller");
   const similar = useMemo(() => {

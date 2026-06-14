@@ -78,7 +78,29 @@ def _normalize_occasion(value: str | None) -> str | None:
 def _fallback_intent(query: str) -> dict[str, Any]:
     lowered = query.lower()
     category = "general"
-    if any(term in lowered for term in ["snack", "chips", "popcorn", "nachos", "cookie", "granola", "nuts", "makhana"]):
+    occasion = None
+    requested_action = "recommend"
+
+    if any(term in lowered for term in ["cut", "finger", "injury", "hurt", "bleed", "bandage", "first aid", "first-aid"]):
+        category = "first_aid"
+        occasion = "first aid emergency"
+    elif any(term in lowered for term in ["guest", "guests", "friend", "friends"]):
+        category = "party_food"
+        occasion = "guest preparation"
+    elif any(term in lowered for term in ["breakfast", "morning meal"]):
+        category = "breakfast"
+        occasion = "quick healthy breakfast"
+    elif "butter" in lowered:
+        category = "breakfast"
+        occasion = "butter"
+        if "order" in lowered or "add" in lowered:
+            requested_action = "add_to_cart"
+    elif any(term in lowered for term in ["yogurt", "curd", "dahi"]):
+        category = "breakfast"
+        occasion = "yogurt"
+        if "order" in lowered or "add" in lowered:
+            requested_action = "add_to_cart"
+    elif any(term in lowered for term in ["snack", "chips", "popcorn", "nachos", "cookie", "granola", "nuts", "makhana"]):
         category = "snacks"
     elif any(term in lowered for term in ["drink", "juice", "soda", "coke", "sprite", "water"]):
         category = "drinks"
@@ -90,6 +112,13 @@ def _fallback_intent(query: str) -> dict[str, Any]:
         category = "party_food"
 
     constraints = [constraint for constraint in ALLOWED_CONSTRAINTS if constraint in lowered]
+    if "high protein" in lowered or "higher protein" in lowered or "protein" in lowered:
+        if "high protein" not in constraints:
+            constraints.append("high protein")
+    if "healthy" in lowered or "healthier" in lowered:
+        if "healthy" not in constraints:
+            constraints.append("healthy")
+
     budget = None
     budget_patterns = [
         r"under\s*(?:rs\.?|inr|₹)?\s*(\d+)",
@@ -108,7 +137,6 @@ def _fallback_intent(query: str) -> dict[str, Any]:
     if match:
         group_size = int(match.group(1))
 
-    requested_action = "recommend"
     if "checkout" in lowered:
         requested_action = "checkout"
     elif "clear cart" in lowered or "empty cart" in lowered:
@@ -118,9 +146,9 @@ def _fallback_intent(query: str) -> dict[str, Any]:
     elif "add to cart" in lowered:
         requested_action = "add_to_cart"
 
-    occasion = None
-    if any(term in lowered for term in ["movie night", "netflix", "watch party", "binge watching", "binge watch", "ipl finals", "ipl final", "cricket match", "sports night"]):
-        occasion = "movie night"
+    if not occasion:
+        if any(term in lowered for term in ["movie night", "netflix", "watch party", "binge watching", "binge watch", "ipl finals", "ipl final", "cricket match", "sports night"]):
+            occasion = "movie night"
 
     return {
         "original_query": query,

@@ -75,6 +75,26 @@ const categoryMeta = {
     title: "Ice Creams & Desserts",
     image: "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?auto=format&fit=crop&w=500&q=80",
     tag: "Frozen"
+  },
+  "first-aid": {
+    title: "First Aid & Health",
+    image: "https://images.unsplash.com/photo-1603398938378-e54eab446dde?auto=format&fit=crop&w=500&q=80",
+    tag: "Medical"
+  },
+  "first_aid": {
+    title: "First Aid & Health",
+    image: "https://images.unsplash.com/photo-1603398938378-e54eab446dde?auto=format&fit=crop&w=500&q=80",
+    tag: "Medical"
+  },
+  baby: {
+    title: "Baby Care",
+    image: "https://images.unsplash.com/photo-1584839404042-8bc21d240e91?auto=format&fit=crop&w=500&q=80",
+    tag: "Baby"
+  },
+  emergency: {
+    title: "Emergency Essentials",
+    image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=500&q=80",
+    tag: "Utility"
   }
 };
 
@@ -110,12 +130,16 @@ export const categorySections = sectionDefinitions.map((section) => ({
 }));
 
 export const products = excelProducts.map((product) => {
-  const meta = categoryMeta[product.category];
+  const meta = categoryMeta[product.category] || {
+    title: product.categoryName || product.category || "General",
+    image: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=500&q=80",
+    tag: "General"
+  };
   return {
     ...product,
     image: product.imageUrl || meta.image,
     fallbackImage: meta.image,
-    tag: meta.tag,
+    tag: product.tag || meta.tag,
     unit: product.quantity,
     reason: `${product.rating} star ${meta.title.toLowerCase()} product with ${product.deliveryMins}-minute delivery.`
   };

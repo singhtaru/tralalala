@@ -9,7 +9,8 @@ export default function SearchHeader({
   query,
   setActiveTab,
   setQuery,
-  setScreen
+  setScreen,
+  triggerVoiceAssistant
 }) {
   return (
     <View style={styles.searchSticky}>
@@ -27,7 +28,7 @@ export default function SearchHeader({
         <Pressable onPress={() => setScreen("assistant")} style={styles.assistButton}>
           <Ionicons name="sparkles" size={20} color={colors.amazonOrange} />
         </Pressable>
-        <Pressable style={styles.micButton}>
+        <Pressable onPress={triggerVoiceAssistant} style={styles.micButton}>
           <Ionicons name="mic" size={22} color="#121820" />
         </Pressable>
       </View>

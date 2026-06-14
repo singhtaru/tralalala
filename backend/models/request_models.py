@@ -22,7 +22,7 @@ class IntentResult(BaseModel):
 
 
 class Product(BaseModel):
-    id: int
+    id: str
     name: str
     category: str
     price: float
@@ -37,6 +37,7 @@ class ScoreBreakdown(BaseModel):
     budget: float
     occasion: float
     constraint: float
+    base_ranking: Optional[float] = None
     total: float
 
 
@@ -47,7 +48,7 @@ class RankedProduct(Product):
 
 
 class Basket(BaseModel):
-    product_ids: list[int]
+    product_ids: list[str]
     items: list[Product]
     total: float
     score: float
@@ -79,3 +80,4 @@ class ChatResponse(BaseModel):
     total: float
     message: str
     reason: str
+    refinement_filters: list[str] = Field(default_factory=list)

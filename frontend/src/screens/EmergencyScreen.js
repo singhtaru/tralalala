@@ -4,10 +4,20 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import ProductCard from "../components/catalog/ProductCard";
 import ScreenTopBar from "../components/common/ScreenTopBar";
 import { emergencyCategories } from "../data/intentEngine";
+import { products as localProducts } from "../data/products";
 import { colors } from "../theme/colors";
 
-export default function EmergencyScreen({ addGeneratedCart, getQuantity, goBack, openProduct, removeFromCart, addToCart }) {
+export default function EmergencyScreen({
+  addGeneratedCart,
+  getQuantity,
+  goBack,
+  openProduct,
+  removeFromCart,
+  addToCart,
+  products = localProducts
+}) {
   const [selected, setSelected] = useState(emergencyCategories[0]);
+  const resolvedProducts = selected.products.map(item => products.find(p => p.id === item.id) || item);
   return (
     <View style={styles.screen}>
       <ScreenTopBar title="Emergency Mode" subtitle="Recommended delivery in 10-15 mins" goBack={goBack} />
@@ -33,14 +43,14 @@ export default function EmergencyScreen({ addGeneratedCart, getQuantity, goBack,
         <View style={styles.detected}>
           <Text style={styles.detectedBadge}>EMERGENCY CART</Text>
           <Text style={styles.detectedTitle}>{selected.message}</Text>
-          <Text style={styles.detectedSub}>{selected.products.length} essentials selected by Amazon Now AI</Text>
+          <Text style={styles.detectedSub}>{resolvedProducts.length} essentials selected by Amazon Now AI</Text>
         </View>
         <View style={styles.grid}>
-          {selected.products.map((product, index) => (
+          {resolvedProducts.map((product, index) => (
             <ProductCard key={product.id} product={product} recommended={index === 0} quantity={getQuantity(product.id)} onDecrement={() => removeFromCart(product)} onIncrement={() => addToCart(product)} onPress={() => openProduct(product)} />
           ))}
         </View>
-        <Pressable onPress={() => addGeneratedCart(selected.products, true)} style={styles.addCart}>
+        <Pressable onPress={() => addGeneratedCart(resolvedProducts, true)} style={styles.addCart}>
           <Text style={styles.addCartText}>Add emergency cart</Text>
           <Ionicons name="arrow-forward" size={20} color="#ffffff" />
         </Pressable>
