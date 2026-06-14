@@ -1,7 +1,7 @@
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000";
 
 export function toBackendId(id) {
-  return id;
+  return encodeURIComponent(String(id));
 }
 
 export function toFrontendId(id) {
@@ -9,26 +9,30 @@ export function toFrontendId(id) {
 }
 
 export function normalizeBackendProduct(backendProd, localProducts = []) {
-  const matchedLocal = localProducts.find(p => p.id === backendProd.id);
+  const matchedLocal = localProducts.find(p => String(p.id) === String(backendProd.id));
   
   if (matchedLocal) {
+    const recommendedQty = typeof backendProd.quantity === "number" ? backendProd.quantity : backendProd.recommendedQty || 1;
     return {
       ...matchedLocal,
       price: backendProd.price || matchedLocal.price,
       name: backendProd.name || matchedLocal.name,
       image: backendProd.imageUrl || backendProd.thumbnail || matchedLocal.image,
-      imageUrl: backendProd.imageUrl || backendProd.thumbnail || matchedLocal.imageUrl
+      imageUrl: backendProd.imageUrl || backendProd.thumbnail || matchedLocal.imageUrl,
+      recommendedQty
     };
   }
   
   const img = backendProd.imageUrl || backendProd.thumbnail || "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=500&q=80";
+  const recommendedQty = typeof backendProd.quantity === "number" ? backendProd.quantity : backendProd.recommendedQty || 1;
   return {
     id: backendProd.id,
     name: backendProd.name,
     category: backendProd.category || "general",
     price: backendProd.price,
-    quantity: backendProd.quantity || "1 pack",
-    unit: backendProd.quantity || "1 pack",
+    quantity: typeof backendProd.quantity === "string" ? backendProd.quantity : backendProd.unit || "1 pack",
+    unit: typeof backendProd.quantity === "string" ? backendProd.quantity : backendProd.unit || "1 pack",
+    recommendedQty,
     image: img,
     imageUrl: img,
     fallbackImage: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=500&q=80",

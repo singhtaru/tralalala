@@ -110,7 +110,7 @@ export default function IosKeyboard({
       keyStyle = [styles.key, styles.shiftKey];
       isSpecial = true;
       const shiftColor = key === "shift-active" ? "#000000" : "#4b5563";
-      label = <Ionicons name={key === "shift-active" ? "shift" : "shift-outline"} size={19} color={shiftColor} />;
+      label = <Ionicons name={key === "shift-active" ? "arrow-up" : "arrow-up-outline"} size={19} color={shiftColor} />;
     } else if (key === "backspace") {
       keyStyle = [styles.key, styles.backspaceKey];
       isSpecial = true;

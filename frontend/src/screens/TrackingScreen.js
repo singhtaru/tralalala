@@ -38,55 +38,44 @@ export default function TrackingScreen({
     { x: 110, y: 138 },  // Approaching (near home)
     { x: 64, y: 152 }    // Delivered (at home)
   ];
-
   useEffect(() => {
-    // Show confirmation notification on start
-    if (triggerGlobalNotification) {
-      triggerGlobalNotification("Amazon Now", `Order total ₹${total} received. Locating store...`);
-    }
-
-    // Step cycle loop: changes status every 5 seconds
     const interval = setInterval(() => {
-      setCurrentStep((prev) => {
-        const next = Math.min(steps.length - 1, prev + 1);
-        if (next !== prev) {
-          // Animate rider to next coordinate
-          Animated.parallel([
-            Animated.timing(riderX, {
-              toValue: stepsCoords[next].x,
-              duration: 2500,
-              useNativeDriver: true
-            }),
-            Animated.timing(riderY, {
-              toValue: stepsCoords[next].y,
-              duration: 2500,
-              useNativeDriver: true
-            })
-          ]).start();
-
-          // Trigger appropriate system notification
-          if (triggerGlobalNotification) {
-            if (next === 1) {
-              triggerGlobalNotification("Amazon Now", "Store is preparing your order. Items are being packed.");
-            } else if (next === 2) {
-              triggerGlobalNotification("Amazon Now", "Finding delivery partner for immediate dispatch...");
-            } else if (next === 3) {
-              triggerGlobalNotification("Amazon Now", "Driver Assigned! Rahul Kumar is on his way to store.");
-            } else if (next === 4) {
-              triggerGlobalNotification("Amazon Now", "Rider Picked Up! Rahul Kumar is heading to your location.");
-            } else if (next === 5) {
-              triggerGlobalNotification("Amazon Now", "Rider Approaching! Rahul Kumar is less than 1 minute away.");
-            } else if (next === 6) {
-              triggerGlobalNotification("Amazon Now", "Delivered! Enjoy your 10-minute essentials.");
-            }
-          }
-        }
-        return next;
-      });
+      setCurrentStep((prev) => Math.min(steps.length - 1, prev + 1));
     }, 5000);
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(riderX, {
+        toValue: stepsCoords[currentStep].x,
+        duration: currentStep === 0 ? 0 : 2500,
+        useNativeDriver: true
+      }),
+      Animated.timing(riderY, {
+        toValue: stepsCoords[currentStep].y,
+        duration: currentStep === 0 ? 0 : 2500,
+        useNativeDriver: true
+      })
+    ]).start();
+
+    if (!triggerGlobalNotification) {
+      return;
+    }
+
+    const notifications = [
+      `Order total ₹${total} received. Locating store...`,
+      "Store is preparing your order. Items are being packed.",
+      "Finding delivery partner for immediate dispatch...",
+      "Driver Assigned! Rahul Kumar is on his way to store.",
+      "Rider Picked Up! Rahul Kumar is heading to your location.",
+      "Rider Approaching! Rahul Kumar is less than 1 minute away.",
+      "Delivered! Enjoy your 10-minute essentials."
+    ];
+
+    triggerGlobalNotification("Amazon Now", notifications[currentStep]);
+  }, [currentStep]);
 
   const progressPct = (currentStep / (steps.length - 1)) * 100;
 
@@ -98,7 +87,7 @@ export default function TrackingScreen({
           <Pressable onPress={goBack} style={styles.backButton}>
             <Ionicons name="chevron-back" size={24} color="#ffffff" />
           </Pressable>
-          <Image source={require("../../assets/intro/amazon-now-transparent.png")} style={styles.logo} />
+          <Image source={require("../../assets/intro/amazon-now-transparent.png")} resizeMode="contain" style={styles.logo} />
           <View style={styles.headerSpacer} />
         </View>
         <Text style={styles.statusTitle}>
@@ -264,7 +253,6 @@ const styles = StyleSheet.create({
   },
   logo: {
     height: 38,
-    resizeMode: "contain",
     width: 178
   },
   statusTitle: {

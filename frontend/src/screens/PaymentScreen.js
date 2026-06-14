@@ -46,7 +46,7 @@ export default function PaymentScreen({
     {
       id: "Emergency Deposit",
       subtitle: `Locked reserve ₹${emergencyDeposit}`,
-      icon: "shield-checkmark-outline",
+      icon: "shield-check",
       disabled: !isEmergencyCart // Only selectable/applicable during emergency checkouts
     },
     {

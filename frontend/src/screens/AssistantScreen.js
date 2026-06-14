@@ -73,7 +73,8 @@ export default function AssistantScreen({
   hideKeyboard,
   startListening,
   onStopListening,
-  products
+  products,
+  sessionId
 }) {
   const [messages, setMessages] = useState([
     { id: "init", sender: "alexa", text: "Hi Shivi! I'm Alexa. Tell me what you need, or say something like 'I cut my finger' or 'Order butter'." }
@@ -217,7 +218,7 @@ export default function AssistantScreen({
     setIsAlexaTyping(true);
 
     // Call backend API
-    const response = await sendChatMessage(text);
+    const response = await sendChatMessage(text, sessionId);
 
     if (response) {
       // Map recommended products returned from the backend
@@ -239,7 +240,9 @@ export default function AssistantScreen({
         text: response.message || `Found products matching your request.`,
         intentCart: normalizedItems.length > 0 ? normalizedItems : null,
         isEmergency: !!isEmergency,
-        refinementFilters: response.refinement_filters || []
+        refinementFilters: response.refinement_filters || [],
+        reason: response.reason,
+        basketTotal: response.total
       };
       setMessages((prev) => [...prev, alexaResponse]);
     } else {
@@ -353,7 +356,33 @@ export default function AssistantScreen({
                   <Text style={styles.aiLabel}>
                     <Ionicons name="sparkles" size={11} color="#00a8e1" /> AI RECOMMENDED
                   </Text>
-                  
+
+                  <View style={styles.basketSummary}>
+                    <View style={styles.basketHeaderRow}>
+                      <Text style={styles.basketTitle}>Recommended Basket</Text>
+                      <Text style={styles.basketTotal}>
+                        ₹{Math.round(msg.basketTotal || msg.intentCart.reduce((sum, item) => sum + item.price * (item.recommendedQty || 1), 0))}
+                      </Text>
+                    </View>
+
+                    {msg.intentCart.map((item) => (
+                      <View key={item.id} style={styles.basketItemRow}>
+                        <Text style={styles.basketCheck}>✓</Text>
+                        <Text numberOfLines={1} style={styles.basketItemName}>
+                          {item.name}
+                        </Text>
+                        <Text style={styles.basketQty}>x{item.recommendedQty || 1}</Text>
+                      </View>
+                    ))}
+
+                    {msg.reason ? (
+                      <View style={styles.reasonBox}>
+                        <Text style={styles.reasonLabel}>Reason</Text>
+                        <Text style={styles.reasonText}>{msg.reason}</Text>
+                      </View>
+                    ) : null}
+                  </View>
+                   
                   {/* Top Pick Product Card */}
                   {(() => {
                     const topPick = msg.intentCart[0];
@@ -427,16 +456,20 @@ export default function AssistantScreen({
                       onPress={() => handleConfirmOrder(msg.intentCart, msg.isEmergency)}
                       style={styles.confirmBtn}
                     >
-                      <Text style={styles.confirmBtnText}>Confirm Order</Text>
+                      <Text style={styles.confirmBtnText}>Add Recommended Basket</Text>
                     </Pressable>
                     <Pressable
-                      onPress={() => {
-                        msg.intentCart.forEach(item => addToCart(item));
-                        handleConfirmOrder(msg.intentCart, msg.isEmergency);
+                      onPress={async () => {
+                        for (const item of msg.intentCart) {
+                          const qty = item.recommendedQty || 1;
+                          for (let i = 0; i < qty; i++) {
+                            await addToCart(item);
+                          }
+                        }
                       }}
                       style={styles.editBtn}
                     >
-                      <Text style={styles.editBtnText}>Edit Cart</Text>
+                      <Text style={styles.editBtnText}>Add Items Only</Text>
                     </Pressable>
                   </View>
                 </View>
@@ -614,6 +647,72 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     letterSpacing: 0.5,
     marginBottom: 8
+  },
+  basketSummary: {
+    backgroundColor: "#172033",
+    borderColor: "#00a8e1",
+    borderRadius: 10,
+    borderWidth: 1,
+    marginBottom: 10,
+    padding: 10
+  },
+  basketHeaderRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8
+  },
+  basketTitle: {
+    color: "#ffffff",
+    fontSize: 13,
+    fontWeight: "900"
+  },
+  basketTotal: {
+    color: "#ff9900",
+    fontSize: 13,
+    fontWeight: "900"
+  },
+  basketItemRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 6,
+    marginBottom: 5
+  },
+  basketCheck: {
+    color: "#22c55e",
+    fontSize: 12,
+    fontWeight: "900"
+  },
+  basketItemName: {
+    color: "#e5e7eb",
+    flex: 1,
+    fontSize: 11,
+    fontWeight: "700"
+  },
+  basketQty: {
+    color: "#9ca3af",
+    fontSize: 10,
+    fontWeight: "800"
+  },
+  reasonBox: {
+    backgroundColor: "rgba(0, 168, 225, 0.12)",
+    borderRadius: 8,
+    marginTop: 8,
+    padding: 8
+  },
+  reasonLabel: {
+    color: "#00a8e1",
+    fontSize: 9,
+    fontWeight: "900",
+    letterSpacing: 0.4,
+    marginBottom: 3,
+    textTransform: "uppercase"
+  },
+  reasonText: {
+    color: "#d1d5db",
+    fontSize: 10,
+    fontWeight: "600",
+    lineHeight: 14
   },
   chatProductsScroll: {
     flexDirection: "row",

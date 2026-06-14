@@ -61,7 +61,7 @@ export default function IosNotification({
         {/* Top bar of the notification banner */}
         <View style={styles.header}>
           <View style={styles.appIconContainer}>
-            <Image source={require("../../../assets/intro/now.png")} style={styles.appIcon} />
+            <Image source={require("../../../assets/intro/now.png")} resizeMode="contain" style={styles.appIcon} />
           </View>
           <Text style={styles.appName}>MESSAGES</Text>
           <Text style={styles.timeText}>now</Text>
@@ -117,7 +117,6 @@ const styles = StyleSheet.create({
   },
   appIcon: {
     height: 12,
-    resizeMode: "contain",
     width: 12
   },
   appName: {

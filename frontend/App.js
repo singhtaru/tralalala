@@ -37,6 +37,7 @@ import {
 } from "./src/services/api";
 
 export default function App() {
+  const [sessionId] = useState(() => "user_" + Date.now());
   const [showSplash, setShowSplash] = useState(true);
   const [isOnboarded, setIsOnboarded] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -134,48 +135,42 @@ export default function App() {
     loadCatalog();
   }, []);
 
-  useEffect(() => {
-    async function loadCart() {
-      const backendCart = await fetchCart();
-      if (backendCart && backendCart.items) {
-        const mappedItems = backendCart.items.map(item => {
-          const norm = normalizeBackendProduct(item, localProducts);
-          return {
-            ...norm,
-            qty: item.quantity || 1
-          };
-        });
-        setCart(mappedItems);
-      }
+  const mapBackendCart = (backendCart) => {
+    if (!backendCart || !backendCart.items) {
+      return [];
     }
-    loadCart();
+
+    return backendCart.items.map(item => {
+      const norm = normalizeBackendProduct(item, localProducts);
+      return {
+        ...norm,
+        qty: item.quantity || 1
+      };
+    });
+  };
+
+  const syncCartFromBackend = async (backendCart = null) => {
+    const nextCart = backendCart || await fetchCart();
+    if (nextCart && nextCart.items) {
+      const mappedItems = mapBackendCart(nextCart);
+      setCart(mappedItems);
+      return mappedItems;
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    syncCartFromBackend();
   }, [products]);
 
   const addToCart = async (product) => {
-    setCart((items) => {
-      const existing = items.find((item) => item.id === product.id);
-      if (existing) {
-        return items.map((item) =>
-          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
-        );
-      }
-      return [...items, { ...product, qty: 1 }];
-    });
-    await addToBackendCart(product.id);
+    const result = await addToBackendCart(product.id);
+    await syncCartFromBackend(result?.cart);
   };
 
   const removeFromCart = async (product) => {
-    setCart((items) => {
-      const existing = items.find((item) => item.id === product.id);
-      if (!existing) return items;
-      if (existing.qty === 1) {
-        return items.filter((item) => item.id !== product.id);
-      }
-      return items.map((item) =>
-        item.id === product.id ? { ...item, qty: item.qty - 1 } : item
-      );
-    });
-    await removeFromBackendCart(product.id);
+    const result = await removeFromBackendCart(product.id);
+    await syncCartFromBackend(result?.cart);
   };
 
   const changeQuantity = (item, delta) => {
@@ -187,7 +182,7 @@ export default function App() {
   };
 
   const getQuantity = (productId) => {
-    const item = cart.find((item) => item.id === productId);
+    const item = cart.find((item) => String(item.id) === String(productId));
     return item ? item.qty : 0;
   };
 
@@ -210,7 +205,7 @@ export default function App() {
     try {
       await clearBackendCart();
       for (const item of items) {
-        const qty = item.quantity || 1;
+        const qty = item.recommendedQty || item.qty || 1;
         for (let i = 0; i < qty; i++) {
           await addToBackendCart(item.id);
         }
@@ -218,13 +213,13 @@ export default function App() {
     } catch (e) {
       console.error(e);
     }
-    setCart(items.map(item => ({ ...item, qty: item.quantity || 1 })));
+    await syncCartFromBackend();
     if (isEmergency) {
       setPaymentMethod("Emergency Deposit");
     } else {
       setPaymentMethod("Amazon Wallet");
     }
-    setScreen("payment");
+    setScreen("cart");
   };
 
   const handlePlaceOrder = async (method) => {
@@ -273,7 +268,7 @@ export default function App() {
     } catch (e) {
       console.error(e);
     }
-    setCart(items.map(item => ({ ...item, qty: 1 })));
+    await syncCartFromBackend();
     setScreen("cart");
   };
 
@@ -506,6 +501,7 @@ export default function App() {
                 startListening={assistantStartListening}
                 onStopListening={() => setAssistantStartListening(false)}
                 products={products}
+                sessionId={sessionId}
               />
             )}
             {screen === "profile" && (
