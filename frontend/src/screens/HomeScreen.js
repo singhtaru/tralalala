@@ -234,11 +234,15 @@ const styles = StyleSheet.create({
   },
   pastCard: {
     backgroundColor: "#ffffff",
-    borderColor: "#e5e7eb",
-    borderRadius: 8,
+    borderColor: "#f0f2f4",
+    borderRadius: 12,
     borderWidth: 1,
-    padding: 12,
-    width: 200
+    padding: 13,
+    width: 200,
+    shadowColor: "#0f172a",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6
   },
   pastCardHeader: {
     alignItems: "center",
@@ -271,10 +275,10 @@ const styles = StyleSheet.create({
   },
   reorderBtn: {
     borderColor: "#ff9900",
-    borderRadius: 4,
+    borderRadius: 6,
     borderWidth: 1.5,
-    paddingHorizontal: 10,
-    paddingVertical: 5
+    paddingHorizontal: 12,
+    paddingVertical: 6
   },
   reorderText: {
     color: "#ff9900",

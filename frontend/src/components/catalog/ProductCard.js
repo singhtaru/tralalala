@@ -70,21 +70,26 @@ export default function ProductCard({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#ffffff",
-    borderColor: "#edf0f2",
-    borderRadius: 8,
+    borderColor: "#f0f2f4",
+    borderRadius: 12,
     borderWidth: 1,
     marginBottom: 14,
     overflow: "hidden",
-    width: "48%"
+    width: "48%",
+    shadowColor: "#0f172a",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8
   },
   compact: {
     width: 158
   },
   pressed: {
-    opacity: 0.86
+    opacity: 0.92,
+    transform: [{ scale: 0.98 }]
   },
   imageWrap: {
-    backgroundColor: "#eaf7f4",
+    backgroundColor: "#f5faf8",
     height: 138,
     justifyContent: "center",
     overflow: "hidden"
@@ -94,34 +99,34 @@ const styles = StyleSheet.create({
     width: "100%"
   },
   ribbon: {
-    backgroundColor: "#fff2c7",
-    borderBottomRightRadius: 7,
+    backgroundColor: "#fff8e1",
+    borderBottomRightRadius: 8,
     color: "#6b4b00",
-    fontSize: 11,
-    fontWeight: "900",
+    fontSize: 10,
+    fontWeight: "800",
     left: 0,
     overflow: "hidden",
     paddingHorizontal: 8,
-    paddingVertical: 5,
+    paddingVertical: 4,
     position: "absolute",
     top: 0,
     zIndex: 2
   },
   body: {
-    padding: 10,
-    paddingBottom: 12
+    padding: 11,
+    paddingBottom: 13
   },
   brand: {
-    color: "#727782",
-    fontSize: 12,
-    fontWeight: "700",
-    marginTop: 2
+    color: "#8b929a",
+    fontSize: 11,
+    fontWeight: "600",
+    marginTop: 3
   },
   priceRow: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 5,
-    marginTop: 5
+    gap: 6,
+    marginTop: 6
   },
   price: {
     color: "#1f2937",
@@ -129,59 +134,59 @@ const styles = StyleSheet.create({
     fontWeight: "900"
   },
   mrp: {
-    color: "#8a9099",
+    color: "#a1a7b0",
     fontSize: 12,
     textDecorationLine: "line-through"
   },
   discount: {
     color: "#0b8b3e",
-    fontSize: 12,
-    fontWeight: "900",
-    marginTop: 2
+    fontSize: 11,
+    fontWeight: "800",
+    marginTop: 3
   },
   name: {
     color: "#282d35",
-    fontSize: 15,
-    fontWeight: "800",
+    fontSize: 14,
+    fontWeight: "700",
     lineHeight: 19,
     marginTop: 2
   },
   ratingRow: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 4,
-    marginTop: 4
+    gap: 5,
+    marginTop: 5
   },
   ratingText: {
-    color: "#282d35",
-    fontSize: 12,
+    color: "#3d4450",
+    fontSize: 11,
     fontWeight: "700"
   },
   bullet: {
-    color: "#a1a7b0",
-    fontSize: 12
+    color: "#c5cad1",
+    fontSize: 10
   },
   deliveryText: {
     color: "#67707c",
     fontSize: 11,
-    fontWeight: "700"
+    fontWeight: "600"
   },
   ai: {
     alignSelf: "flex-start",
-    backgroundColor: "#e7f4ff",
-    borderRadius: 5,
+    backgroundColor: "#eef6ff",
+    borderRadius: 6,
     color: "#0073bb",
     fontSize: 10,
-    fontWeight: "900",
+    fontWeight: "800",
     marginTop: 6,
     overflow: "hidden",
-    paddingHorizontal: 6,
+    paddingHorizontal: 7,
     paddingVertical: 3
   },
   addButton: {
     alignItems: "center",
     borderColor: "#1f9c39",
-    borderRadius: 7,
+    borderRadius: 8,
     borderWidth: 1.5,
     marginTop: 10,
     paddingVertical: 8
@@ -194,7 +199,7 @@ const styles = StyleSheet.create({
   stepper: {
     alignItems: "center",
     backgroundColor: "#16852e",
-    borderRadius: 7,
+    borderRadius: 8,
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 10,

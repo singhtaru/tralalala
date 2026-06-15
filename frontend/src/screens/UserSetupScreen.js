@@ -10,14 +10,14 @@ export default function UserSetupScreen({
   onComplete
 }) {
   const [formData, setFormData] = useState({
-    name: "Shivi",
-    phone: "62993 36649",
-    flat: "Flat 402, Block C",
-    street: "Sector 62",
-    area: "Siddharth Vihar",
-    city: "Ghaziabad",
-    state: "Uttar Pradesh",
-    pin: "201009"
+    name: "Shivani",
+    phone: "9988998899",
+    flat: "Flat 301, Wing A, Orchid Heights",
+    street: "Linking Road",
+    area: "Andheri West",
+    city: "Mumbai",
+    state: "Maharashtra",
+    pin: "400053"
   });
 
   const [deposit, setDeposit] = useState(1000);
@@ -282,9 +282,13 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#ffffff",
-    borderRadius: 8,
+    borderRadius: 12,
     marginBottom: 20,
-    overflow: "hidden"
+    overflow: "hidden",
+    shadowColor: "#0f172a",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6
   },
   inputRow: {
     alignItems: "center",
@@ -325,11 +329,11 @@ const styles = StyleSheet.create({
   },
   depositPill: {
     alignItems: "center",
-    borderColor: "#d1d5db",
-    borderRadius: 6,
+    borderColor: "#e5e7eb",
+    borderRadius: 10,
     borderWidth: 1,
     flex: 1,
-    paddingVertical: 10
+    paddingVertical: 11
   },
   depositPillActive: {
     backgroundColor: "#fff7e6",
@@ -346,15 +350,15 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     backgroundColor: "#ff9900",
-    borderRadius: 6,
+    borderRadius: 10,
     flexDirection: "row",
-    height: 48,
+    height: 50,
     justifyContent: "center",
-    marginTop: 8,
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 1
+    marginTop: 10,
+    shadowColor: "#ff9900",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.18,
+    shadowRadius: 6
   },
   buttonDisabled: {
     backgroundColor: "#f3d078",

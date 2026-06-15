@@ -447,22 +447,22 @@ const styles = StyleSheet.create({
   option: {
     alignItems: "center",
     backgroundColor: "#ffffff",
-    borderColor: colors.stroke,
-    borderRadius: 8,
+    borderColor: "#f0f2f4",
+    borderRadius: 12,
     borderWidth: 1,
     flexDirection: "row",
     marginBottom: 10,
     padding: 14
   },
   optionSelected: {
-    backgroundColor: "#fff8eb",
+    backgroundColor: "#fff9ef",
     borderColor: colors.amazonOrange
   },
   optionDisabled: {
-    opacity: 0.5
+    opacity: 0.85
   },
   disabledText: {
-    color: "#9ca3af"
+    color: "#6b7280"
   },
   emergencyPill: {
     backgroundColor: "#fef2f2",
@@ -516,7 +516,7 @@ const styles = StyleSheet.create({
   },
   payButton: {
     backgroundColor: colors.green,
-    borderRadius: 8,
+    borderRadius: 10,
     paddingHorizontal: 30,
     paddingVertical: 14
   },

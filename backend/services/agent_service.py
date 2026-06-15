@@ -140,39 +140,62 @@ def _get_refinement_filters(intent, recommended_items):
     occasion = intent.get("occasion", "").lower() if intent.get("occasion") else ""
     goal = intent.get("goal", "").lower() if intent.get("goal") else ""
     items = recommended_items or []
-    
+
     if category == "general" and items:
         category = items[0].get("category", "general").lower()
 
-    if "butter" in goal or occasion == "butter":
-        return ["Premium Quality", "Budget Friendly", "Best Seller", "Fast Delivery", "Organic"]
-        
+    # Dairy-specific filters
+    if category in {"dairy", "butter"} or "butter" in goal or occasion == "butter":
+        return ["Best Seller", "Organic", "Premium", "Budget Friendly"]
+
     if "yogurt" in goal or "curd" in goal or occasion == "yogurt":
-        return ["High Protein", "Low Cost", "Premium", "Lactose Free", "Fast Delivery", "Best Seller"]
-        
+        return ["Best Seller", "Organic", "Premium", "Budget Friendly"]
+
     if "milk" in goal:
-        return ["Lactose Free", "High Protein", "Organic", "Budget Friendly"]
+        return ["Best Seller", "Organic", "Premium", "Budget Friendly"]
 
     if any("butter" in p.get("name", "").lower() for p in items):
-        return ["Premium Quality", "Budget Friendly", "Best Seller", "Fast Delivery", "Organic"]
-        
+        return ["Best Seller", "Organic", "Premium", "Budget Friendly"]
+
     if any("yogurt" in p.get("name", "").lower() or "curd" in p.get("name", "").lower() for p in items):
-        return ["High Protein", "Low Cost", "Premium", "Lactose Free", "Fast Delivery", "Best Seller"]
-        
+        return ["Best Seller", "Organic", "Premium", "Budget Friendly"]
+
     if any("milk" in p.get("name", "").lower() for p in items):
-        return ["Lactose Free", "High Protein", "Organic", "Budget Friendly"]
+        return ["Best Seller", "Organic", "Premium", "Budget Friendly"]
 
-    if category in {"snacks", "chips", "chocolate", "icecream", "bakery"}:
-        return ["Healthy", "Low Calorie", "High Protein", "Budget Friendly", "Premium"]
+    # First-aid filters
+    if category == "first_aid" or occasion == "first aid emergency":
+        return ["Fast Delivery", "Best Seller"]
 
-    if category in {"dairy", "breakfast"}:
-        return ["Lactose Free", "High Protein", "Organic", "Budget Friendly"]
+    # Baby care filters
+    if category == "baby":
+        return ["Best Seller", "Premium", "Budget Friendly", "Fast Delivery"]
+
+    # Emergency filters
+    if category == "emergency":
+        return ["Fast Delivery", "Best Seller"]
+
+    # Breakfast filters
+    if category == "breakfast" or occasion in {"quick healthy breakfast", "breakfast"}:
+        return ["Healthy", "High Protein", "Organic", "Budget Friendly"]
+
+    # Snacks filters
+    if category in {"snacks", "chips", "chocolate", "icecream", "bakery", "gourmet"}:
+        return ["Best Seller", "Premium", "Budget Friendly", "Fast Delivery"]
+
+    if category == "healthy_snacks":
+        return ["High Protein", "Organic", "Budget Friendly", "Best Seller"]
+
     if category in {"drinks", "tea"}:
-        return ["Lactose Free", "Healthy", "Organic", "Budget Friendly", "Fast Delivery"]
+        return ["Healthy", "Organic", "Budget Friendly", "Fast Delivery"]
+
+    if category == "party_food" or occasion == "guest preparation":
+        return ["Best Seller", "Premium", "Budget Friendly", "Fast Delivery"]
+
     if category in {"fruits", "vegetables"}:
         return ["Organic", "Fresh", "Budget Friendly", "Best Seller"]
-        
-    return ["Budget Friendly", "Premium Quality", "Best Seller", "Fast Delivery"]
+
+    return ["Budget Friendly", "Premium", "Best Seller", "Fast Delivery"]
 
 
 def _build_response(

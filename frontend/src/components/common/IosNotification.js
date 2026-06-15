@@ -61,7 +61,7 @@ export default function IosNotification({
         {/* Top bar of the notification banner */}
         <View style={styles.header}>
           <View style={styles.appIconContainer}>
-            <Image source={require("../../../assets/intro/now.png")} resizeMode="contain" style={styles.appIcon} />
+            <Image source={require("../../../assets/intro/amazon-now-transparent.png")} resizeMode="contain" style={styles.appIcon} />
           </View>
           <Text style={styles.appName}>MESSAGES</Text>
           <Text style={styles.timeText}>now</Text>

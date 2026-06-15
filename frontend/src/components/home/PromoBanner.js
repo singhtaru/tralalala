@@ -21,34 +21,39 @@ export default function PromoBanner({ onPress }) {
 const styles = StyleSheet.create({
   banner: {
     backgroundColor: colors.softYellow,
-    borderRadius: 8,
+    borderRadius: 14,
     flexDirection: "row",
     margin: 16,
     minHeight: 132,
-    overflow: "hidden"
+    overflow: "hidden",
+    shadowColor: "#0f172a",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10
   },
   copy: {
     flex: 1,
     justifyContent: "center",
-    padding: 14
+    padding: 16
   },
   kicker: {
     color: "#007185",
-    fontSize: 12,
-    fontWeight: "900",
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 0.5,
     textTransform: "uppercase"
   },
   title: {
     color: colors.ink,
-    fontSize: 23,
-    fontWeight: "900",
+    fontSize: 22,
+    fontWeight: "800",
     lineHeight: 27,
-    marginTop: 4
+    marginTop: 5
   },
   sub: {
     color: "#5f6670",
     fontSize: 13,
-    fontWeight: "700",
+    fontWeight: "500",
     lineHeight: 18,
     marginTop: 6
   },

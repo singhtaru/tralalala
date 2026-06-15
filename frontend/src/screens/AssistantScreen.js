@@ -251,47 +251,18 @@ export default function AssistantScreen({
       let alexaResponse = {
         id: "alexa_" + Date.now(),
         sender: "alexa",
-        text: "I cut my finger? Suggest snacks for guests? I'm having difficulty connecting to my servers right now. Here is a simulated view.",
+        text: "",
         refinementFilters: []
       };
 
       if (intent) {
-        if (intent.id === "injury") {
-          alexaResponse.text = "[Offline Mode] I detected a first-aid emergency and compiled an instant care cart. Would you like me to place the order?";
-          alexaResponse.intentCart = intent.products;
-          alexaResponse.isEmergency = true;
-          alexaResponse.refinementFilters = ["Fast Delivery", "Best Seller", "Budget Friendly"];
-        } else if (intent.id === "fever") {
-          alexaResponse.text = "[Offline Mode] I've assembled a fever-care recovery pack for you. Shall we order it?";
-          alexaResponse.intentCart = intent.products;
-          alexaResponse.isEmergency = true;
-          alexaResponse.refinementFilters = ["Fast Delivery", "Best Seller"];
-        } else if (intent.id === "baby") {
-          alexaResponse.text = "[Offline Mode] Baby emergency detected. I've prepared wipes and diaper packs. Confirm to order immediately.";
-          alexaResponse.intentCart = intent.products;
-          alexaResponse.isEmergency = true;
-          alexaResponse.refinementFilters = ["Budget Friendly", "Best Seller"];
-        } else if (intent.id === "power") {
-          alexaResponse.text = "[Offline Mode] Power outage detected. I've loaded rechargeable lights, noodles, and water. Order now?";
-          alexaResponse.intentCart = intent.products;
-          alexaResponse.isEmergency = true;
-          alexaResponse.refinementFilters = ["Fast Delivery", "Budget Friendly"];
-        } else if (intent.id === "guests") {
-          alexaResponse.text = "[Offline Mode] Got it, unexpected guests arrived! I've loaded popular chips, chocolates, and cold beverages. Let's checkout?";
-          alexaResponse.intentCart = intent.products;
-          alexaResponse.refinementFilters = ["Healthy", "Low Calorie", "High Protein", "Budget Friendly", "Premium"];
-        } else if (intent.id === "breakfast") {
-          alexaResponse.text = "[Offline Mode] I've compiled a quick breakfast cart including milk, eggs, bread, butter, and bananas. Shall we confirm?";
-          alexaResponse.intentCart = intent.products;
-          alexaResponse.refinementFilters = ["Lactose Free", "High Protein", "Organic", "Budget Friendly"];
-        } else if (intent.id === "butter") {
-          const butterProduct = intent.products[0];
-          alexaResponse.text = `[Offline Mode] I selected the top-rated ${butterProduct.name} with fast ${butterProduct.deliveryMins}-minute delivery. Shall I place the order?`;
-          alexaResponse.intentCart = [butterProduct];
-          alexaResponse.refinementFilters = ["Premium Quality", "Budget Friendly", "Best Seller", "Fast Delivery", "Organic"];
-        }
+        const isEmergencyIntent = ["injury", "burn", "fever", "baby", "power", "household"].includes(intent.id);
+        alexaResponse.text = intent.message || `Found products matching your request.`;
+        alexaResponse.intentCart = intent.products;
+        alexaResponse.isEmergency = isEmergencyIntent;
+        alexaResponse.refinementFilters = intent.refinementFilters || ["Best Seller", "Fast Delivery", "Budget Friendly"];
       } else {
-        alexaResponse.text = "I'm not sure how to assist with that. Please type your query, or try saying 'I cut my finger' or 'Order butter'.";
+        alexaResponse.text = "I'm not sure how to assist with that. Try saying something like 'Order butter', 'I want chips', or 'I cut my finger'.";
       }
       setMessages((prev) => [...prev, alexaResponse]);
     }
@@ -457,19 +428,6 @@ export default function AssistantScreen({
                       style={styles.confirmBtn}
                     >
                       <Text style={styles.confirmBtnText}>Add Recommended Basket</Text>
-                    </Pressable>
-                    <Pressable
-                      onPress={async () => {
-                        for (const item of msg.intentCart) {
-                          const qty = item.recommendedQty || 1;
-                          for (let i = 0; i < qty; i++) {
-                            await addToCart(item);
-                          }
-                        }
-                      }}
-                      style={styles.editBtn}
-                    >
-                      <Text style={styles.editBtnText}>Add Items Only</Text>
                     </Pressable>
                   </View>
                 </View>
@@ -757,31 +715,18 @@ const styles = StyleSheet.create({
   },
   intentActions: {
     flexDirection: "row",
-    gap: 8,
-    marginTop: 4
+    marginTop: 8
   },
   confirmBtn: {
     alignItems: "center",
     backgroundColor: "#ff9900",
-    borderRadius: 6,
+    borderRadius: 8,
     flex: 1,
-    paddingVertical: 10
+    paddingVertical: 12
   },
   confirmBtnText: {
     color: "#111827",
-    fontSize: 12,
-    fontWeight: "800"
-  },
-  editBtn: {
-    alignItems: "center",
-    backgroundColor: "#374151",
-    borderRadius: 6,
-    flex: 1,
-    paddingVertical: 10
-  },
-  editBtnText: {
-    color: "#ffffff",
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "800"
   },
   visualizerBlock: {

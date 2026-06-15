@@ -25,32 +25,38 @@ const styles = StyleSheet.create({
     backgroundColor: "#e8f8fb",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingBottom: 12,
+    paddingBottom: 14,
     paddingHorizontal: 18,
-    paddingTop: 14
+    paddingTop: 16
   },
   locationLabel: {
     color: "#007185",
-    fontSize: 13,
-    fontWeight: "900"
+    fontSize: 12,
+    fontWeight: "700",
+    letterSpacing: 0.2
   },
   location: {
     color: colors.amazonBlue,
-    fontSize: 18,
-    fontWeight: "900",
+    fontSize: 17,
+    fontWeight: "800",
+    marginTop: 2,
     maxWidth: 245
   },
   profileButton: {
     alignItems: "center",
     backgroundColor: "#ffffff",
-    borderRadius: 20,
-    height: 40,
+    borderRadius: 22,
+    height: 42,
     justifyContent: "center",
-    width: 40
+    width: 42,
+    shadowColor: "#0f172a",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6
   },
   initial: {
     color: colors.amazonBlue,
     fontSize: 17,
-    fontWeight: "900"
+    fontWeight: "800"
   }
 });

@@ -4,16 +4,90 @@ import re
 from itertools import combinations
 from pathlib import Path
 
-import requests
+import pandas as pd
 
 PRODUCTS_FILE = Path(__file__).resolve().parent.parent / "products.json"
-DUMMYJSON_BASE_URL = os.getenv("DUMMYJSON_BASE_URL", "https://dummyjson.com")
+CSV_FILE = Path(__file__).resolve().parent.parent.parent / "BigBasket Products.csv"
+
+# Categories from the CSV to keep (food/grocery/household relevant)
+ALLOWED_CSV_CATEGORIES = {
+    "Foodgrains, Oil & Masala",
+    "Snacks & Branded Foods",
+    "Beverages",
+    "Bakery, Cakes & Dairy",
+    "Fruits & Vegetables",
+    "Eggs, Meat & Fish",
+    "Baby Care",
+    "Cleaning & Household",
+    "Kitchen, Garden & Pets",
+    "Gourmet & World Food",
+}
+
+# Delivery time estimates by CSV category
+DELIVERY_MINS_BY_CATEGORY = {
+    "Fruits & Vegetables": 10,
+    "Bakery, Cakes & Dairy": 10,
+    "Snacks & Branded Foods": 10,
+    "Beverages": 10,
+    "Foodgrains, Oil & Masala": 12,
+    "Eggs, Meat & Fish": 15,
+    "Baby Care": 12,
+    "Cleaning & Household": 15,
+    "Kitchen, Garden & Pets": 20,
+    "Gourmet & World Food": 12,
+}
+
+# Unsplash image URLs by sub_category / type keywords
+UNSPLASH_IMAGES = {
+    "fruit": "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?auto=format&fit=crop&w=500&q=80",
+    "vegetable": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=500&q=80",
+    "rice": "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=500&q=80",
+    "oil": "https://images.unsplash.com/photo-1474979266404-7f28db3f3c2b?auto=format&fit=crop&w=500&q=80",
+    "masala": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=500&q=80",
+    "spice": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=500&q=80",
+    "flour": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=500&q=80",
+    "dal": "https://images.unsplash.com/photo-1585996094284-a7e5f03897a4?auto=format&fit=crop&w=500&q=80",
+    "snack": "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?auto=format&fit=crop&w=500&q=80",
+    "chips": "https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=500&q=80",
+    "biscuit": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=500&q=80",
+    "cookie": "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=500&q=80",
+    "chocolate": "https://images.unsplash.com/photo-1481391319762-47dff72954d9?auto=format&fit=crop&w=500&q=80",
+    "namkeen": "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=500&q=80",
+    "tea": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=500&q=80",
+    "coffee": "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=500&q=80",
+    "juice": "https://images.unsplash.com/photo-1534353473418-4cfa6c56fd38?auto=format&fit=crop&w=500&q=80",
+    "water": "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=500&q=80",
+    "soft drink": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=500&q=80",
+    "milk": "https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=500&q=80",
+    "dairy": "https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&w=500&q=80",
+    "cheese": "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=500&q=80",
+    "butter": "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=500&q=80",
+    "yogurt": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=500&q=80",
+    "bread": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=500&q=80",
+    "cake": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80",
+    "egg": "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=500&q=80",
+    "meat": "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=500&q=80",
+    "chicken": "https://images.unsplash.com/photo-1587593810167-a84920ea0781?auto=format&fit=crop&w=500&q=80",
+    "fish": "https://images.unsplash.com/photo-1534604973900-c43ab4c2e0ab?auto=format&fit=crop&w=500&q=80",
+    "baby": "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=500&q=80",
+    "cleaning": "https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=500&q=80",
+    "detergent": "https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=500&q=80",
+    "noodle": "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?auto=format&fit=crop&w=500&q=80",
+    "pasta": "https://images.unsplash.com/photo-1551462147-ff29053bfc14?auto=format&fit=crop&w=500&q=80",
+    "cereal": "https://images.unsplash.com/photo-1517456793572-1d8efd6dc135?auto=format&fit=crop&w=500&q=80",
+    "honey": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=500&q=80",
+    "jam": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80",
+    "pickle": "https://images.unsplash.com/photo-1589135233689-3d3a7741d4e4?auto=format&fit=crop&w=500&q=80",
+    "sauce": "https://images.unsplash.com/photo-1472476443507-c7a5948772fc?auto=format&fit=crop&w=500&q=80",
+    "default": "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=500&q=80",
+}
 
 FOOD_CATEGORIES = {
-    "groceries", "snacks", "drinks", "instant food", "beverages", "first-aid", "first_aid", 
-    "baby", "emergency", "party_food", "breakfast", "fruits", "atta", "oil", "dairy", 
+    "groceries", "snacks", "drinks", "instant food", "beverages", "first-aid", "first_aid",
+    "baby", "emergency", "party_food", "breakfast", "fruits", "atta", "oil", "dairy",
     "bakery", "cereal", "meat", "chips", "chocolate", "tea", "instant", "health", "icecream",
-    "general"
+    "general", "foodgrains", "cleaning", "household", "gourmet", "eggs", "fish",
+    "vegetables", "kitchen", "butter",
 }
 NON_FOOD_CATEGORIES = {
     "beauty",
@@ -70,23 +144,32 @@ HUMAN_FOOD_KEYWORDS = {
     "soup",
     "oats",
     "bar",
+    "butter",
+    "milk",
+    "bread",
+    "rice",
+    "dal",
+    "flour",
+    "tea",
+    "coffee",
 }
 
 PRODUCT_TAG_KEYWORDS = {
-    "snack": ["chips", "nachos", "popcorn", "cookies", "cookie", "cracker", "makhana"],
-    "healthy_snack": ["nuts", "granola", "protein", "trail mix", "makhana", "roasted", "bar"],
-    "instant_food": ["maggi", "noodle", "noodles", "ramen", "pasta", "soup", "oats", "mac"],
-    "drink": ["coke", "cola", "sprite", "soda", "juice", "drink", "water"],
-    "healthy_drink": ["water", "juice", "sparkling", "coconut"],
-    "sweet_snack": ["cookie", "cookies", "chocolate", "brownie", "sweet"],
+    "snack": ["chips", "nachos", "popcorn", "cookies", "cookie", "cracker", "makhana", "namkeen", "bhujia", "mixture"],
+    "healthy_snack": ["nuts", "granola", "protein", "trail mix", "makhana", "roasted", "bar", "oats", "muesli"],
+    "instant_food": ["maggi", "noodle", "noodles", "ramen", "pasta", "soup", "oats", "mac", "instant"],
+    "drink": ["coke", "cola", "sprite", "soda", "juice", "drink", "water", "soft drink", "energy drink"],
+    "healthy_drink": ["water", "juice", "sparkling", "coconut", "green tea", "herbal"],
+    "sweet_snack": ["cookie", "cookies", "chocolate", "brownie", "sweet", "cake", "biscuit"],
     "pet_food": ["cat food", "dog food", "pet food"],
     "non_food": ["lotion", "cream", "serum", "shampoo", "soap", "perfume", "moisturizer"],
     "first_aid": ["bandage", "bandages", "cotton", "antiseptic", "dettol", "tape", "thermometer", "medicine"],
     "baby": ["diaper", "diapers", "wipes", "baby"],
     "emergency": ["led", "bulb", "torch", "light", "rechargeable"],
     "party_food": ["plates", "disposable", "party", "guests"],
-    "breakfast": ["eggs", "milk", "oats", "yogurt", "bread", "butter", "curd", "dahi"],
+    "breakfast": ["eggs", "milk", "oats", "yogurt", "bread", "butter", "curd", "dahi", "cereal", "muesli", "jam", "honey"],
     "butter": ["butter"],
+    "dairy": ["milk", "curd", "yogurt", "paneer", "cheese", "butter", "ghee", "cream"],
 }
 
 OCCASION_PRODUCT_TAGS = {
@@ -98,7 +181,8 @@ OCCASION_PRODUCT_TAGS = {
     "first aid emergency": {"first_aid": 50},
     "guest preparation": {"party_food": 40, "snack": 20, "drink": 20},
     "quick healthy breakfast": {"breakfast": 50, "healthy_snack": 15},
-    "butter": {"butter": 50},
+    "butter": {"butter": 50, "breakfast": 20},
+    "breakfast": {"breakfast": 50, "healthy_snack": 15},
 }
 
 CONSTRAINT_TAG_BONUSES = {
@@ -122,6 +206,8 @@ BASKET_TEMPLATES = {
     "quick healthy breakfast": [["breakfast"], ["breakfast"], ["breakfast"], ["breakfast"]],
     "butter": [["butter"]],
     "yogurt": [["breakfast"]],
+    "breakfast": [["breakfast"], ["breakfast"], ["breakfast"]],
+    "dairy": [["dairy", "breakfast"], ["dairy", "breakfast"]],
 }
 
 CATEGORY_TO_TAGS = {
@@ -129,33 +215,193 @@ CATEGORY_TO_TAGS = {
     "healthy_snacks": {"healthy_snack", "healthy_drink", "snack"},
     "drinks": {"drink", "healthy_drink"},
     "instant_food": {"instant_food", "drink", "healthy_drink"},
-    "breakfast": {"breakfast", "healthy_snack", "instant_food", "healthy_drink", "snack"},
+    "breakfast": {"breakfast", "healthy_snack", "instant_food", "healthy_drink", "snack", "dairy"},
     "party_food": {"party_food", "snack", "healthy_snack", "drink", "sweet_snack"},
     "first_aid": {"first_aid"},
     "baby": {"baby"},
     "emergency": {"emergency"},
-    "general": {"snack", "healthy_snack", "drink", "healthy_drink", "instant_food", "sweet_snack", "first_aid", "baby", "emergency", "party_food", "breakfast", "butter"},
+    "dairy": {"dairy", "breakfast", "butter"},
+    "butter": {"butter", "dairy", "breakfast"},
+    "general": {"snack", "healthy_snack", "drink", "healthy_drink", "instant_food", "sweet_snack", "first_aid", "baby", "emergency", "party_food", "breakfast", "butter", "dairy"},
 }
 
+
+# ─── CSV Loading ───────────────────────────────────────────────────────────────
+
+_csv_products_cache = None
+
+
+def _get_unsplash_image(product_name, sub_category, category):
+    """Generate a reasonable Unsplash image URL based on product type/subcategory."""
+    text = f"{product_name} {sub_category} {category}".lower()
+    
+    # Check keywords in priority order
+    for keyword, url in UNSPLASH_IMAGES.items():
+        if keyword == "default":
+            continue
+        if keyword in text:
+            return url
+    
+    return UNSPLASH_IMAGES["default"]
+
+
+def _map_csv_category(category, sub_category):
+    """Map CSV category + sub_category to internal category format."""
+    cat_lower = category.lower()
+    sub_lower = sub_category.lower() if sub_category else ""
+    
+    if "fruit" in cat_lower or "vegetable" in cat_lower:
+        return "fruits"
+    if "snack" in cat_lower or "branded food" in cat_lower:
+        if "chips" in sub_lower or "namkeen" in sub_lower:
+            return "chips"
+        if "chocolate" in sub_lower or "candy" in sub_lower:
+            return "chocolate"
+        if "biscuit" in sub_lower or "cookie" in sub_lower:
+            return "bakery"
+        return "snacks"
+    if "beverage" in cat_lower:
+        if "tea" in sub_lower or "coffee" in sub_lower:
+            return "tea"
+        return "drinks"
+    if "bakery" in cat_lower or "dairy" in cat_lower:
+        if "milk" in sub_lower or "butter" in sub_lower or "cheese" in sub_lower or "curd" in sub_lower or "paneer" in sub_lower:
+            return "dairy"
+        return "bakery"
+    if "foodgrain" in cat_lower or "oil" in cat_lower or "masala" in cat_lower:
+        if "oil" in sub_lower or "ghee" in sub_lower:
+            return "oil"
+        if "atta" in sub_lower or "flour" in sub_lower:
+            return "atta"
+        if "rice" in sub_lower:
+            return "atta"
+        if "dal" in sub_lower or "pulse" in sub_lower:
+            return "atta"
+        return "groceries"
+    if "egg" in cat_lower or "meat" in cat_lower or "fish" in cat_lower:
+        return "meat"
+    if "baby" in cat_lower:
+        return "baby"
+    if "cleaning" in cat_lower or "household" in cat_lower:
+        return "cleaning"
+    if "kitchen" in cat_lower or "garden" in cat_lower or "pet" in cat_lower:
+        return "household"
+    if "gourmet" in cat_lower:
+        return "gourmet"
+    
+    return "general"
+
+
+def _load_csv_products():
+    """Load and process products from BigBasket CSV file."""
+    global _csv_products_cache
+    
+    if _csv_products_cache is not None:
+        return _csv_products_cache
+    
+    if not CSV_FILE.exists():
+        _csv_products_cache = []
+        return _csv_products_cache
+    
+    try:
+        df = pd.read_csv(CSV_FILE, encoding="utf-8")
+    except Exception:
+        _csv_products_cache = []
+        return _csv_products_cache
+    
+    # Filter to allowed categories only (exclude Beauty & Hygiene)
+    df = df[df["category"].isin(ALLOWED_CSV_CATEGORIES)].copy()
+    
+    # Clean up data
+    df["sale_price"] = pd.to_numeric(df["sale_price"], errors="coerce").fillna(0)
+    df["rating"] = pd.to_numeric(df["rating"], errors="coerce").fillna(0)
+    
+    # Filter out products with no price
+    df = df[df["sale_price"] > 0]
+    
+    # Select top ~500 products: best rated across categories
+    # First ensure we have a good spread across categories
+    selected_frames = []
+    for cat in ALLOWED_CSV_CATEGORIES:
+        cat_df = df[df["category"] == cat].copy()
+        if cat_df.empty:
+            continue
+        # Sort by rating (desc), take top products from each category
+        cat_df = cat_df.sort_values("rating", ascending=False)
+        # Allocate proportionally but ensure minimum representation
+        n_products = max(20, min(80, len(cat_df)))
+        selected_frames.append(cat_df.head(n_products))
+    
+    if selected_frames:
+        selected_df = pd.concat(selected_frames, ignore_index=True)
+    else:
+        selected_df = df.head(500)
+    
+    # Cap at ~500
+    if len(selected_df) > 500:
+        selected_df = selected_df.sort_values("rating", ascending=False).head(500)
+    
+    # Convert to product dicts
+    products = []
+    for _, row in selected_df.iterrows():
+        idx = str(row.get("index", ""))
+        product_id = f"CSV{idx}"
+        product_name = str(row.get("product", "Unknown"))
+        category = str(row.get("category", ""))
+        sub_category = str(row.get("sub_category", ""))
+        brand = str(row.get("brand", "")).strip()
+        sale_price = float(row.get("sale_price", 0))
+        rating = float(row.get("rating", 0)) if row.get("rating") and row.get("rating") > 0 else 4.0
+        description = str(row.get("description", "")) if pd.notna(row.get("description")) else ""
+        
+        internal_category = _map_csv_category(category, sub_category)
+        delivery_mins = DELIVERY_MINS_BY_CATEGORY.get(category, 12)
+        image_url = _get_unsplash_image(product_name, sub_category, category)
+        
+        if not brand or brand == "nan":
+            brand = product_name.split()[0] if product_name else "Generic"
+        
+        products.append({
+            "id": product_id,
+            "name": product_name,
+            "category": internal_category,
+            "price": sale_price,
+            "rating": rating,
+            "deliveryMins": delivery_mins,
+            "imageUrl": image_url,
+            "thumbnail": image_url,
+            "brand": brand,
+            "quantity": "1 pack",
+            "description": description,
+            "source": "csv",
+            "csv_category": category,
+            "csv_sub_category": sub_category,
+        })
+    
+    _csv_products_cache = products
+    return _csv_products_cache
+
+
+# ─── Local JSON Loading ────────────────────────────────────────────────────────
 
 def _load_local_products():
     with PRODUCTS_FILE.open("r", encoding="utf-8") as file:
         return json.load(file)
 
 
-def _normalize_product(product, source_name="dummyjson"):
+def _normalize_product(product, source_name="local-fallback"):
     product_id = str(product["id"])
     name = product.get("name") or product.get("title", "Unknown Product")
     rating = float(product.get("rating", 4.5))
     delivery_mins = int(product.get("deliveryMins", 15))
-    
+
     # Generate deterministic metadata based on name hash
     h = abs(hash(name))
     purchase_count = (h % 450) + 50
     popularity = (h % 90) + 10
     repeat_purchases = int(purchase_count * ((h % 30) + 10) / 100.0)
     brand = product.get("brand") or name.split()[0]
-    thumbnail = product.get("thumbnail") or product.get("imageUrl") or "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=500&q=80"
+    thumbnail = product.get("thumbnail") or product.get("imageUrl") or UNSPLASH_IMAGES["default"]
 
     return {
         "id": product_id,
@@ -172,8 +418,38 @@ def _normalize_product(product, source_name="dummyjson"):
         "purchase_count": purchase_count,
         "popularity": popularity,
         "repeat_purchases": repeat_purchases,
+        "quantity": product.get("quantity", "1 pack"),
     }
 
+
+def _normalize_csv_product(product):
+    """Normalize a CSV-sourced product to the same format as local products."""
+    name = product.get("name", "Unknown")
+    h = abs(hash(name))
+    purchase_count = (h % 350) + 30
+    popularity = (h % 80) + 10
+    repeat_purchases = int(purchase_count * ((h % 25) + 8) / 100.0)
+
+    return {
+        "id": product["id"],
+        "name": name,
+        "category": product.get("category", "general"),
+        "price": float(product.get("price", 0.0)),
+        "description": product.get("description", ""),
+        "thumbnail": product.get("thumbnail", UNSPLASH_IMAGES["default"]),
+        "imageUrl": product.get("imageUrl", UNSPLASH_IMAGES["default"]),
+        "source": "csv",
+        "brand": product.get("brand", "Generic"),
+        "rating": float(product.get("rating", 4.0)),
+        "deliveryMins": int(product.get("deliveryMins", 12)),
+        "purchase_count": purchase_count,
+        "popularity": popularity,
+        "repeat_purchases": repeat_purchases,
+        "quantity": product.get("quantity", "1 pack"),
+    }
+
+
+# ─── Utility Functions ─────────────────────────────────────────────────────────
 
 def _tokenize(text):
     return [token for token in re.findall(r"[a-z0-9]+", text.lower()) if len(token) > 1]
@@ -185,6 +461,8 @@ def _product_text(product):
             str(product.get("name", "")),
             str(product.get("category", "")),
             str(product.get("description", "")),
+            str(product.get("csv_sub_category", "")),
+            str(product.get("brand", "")),
         ]
     ).lower()
 
@@ -199,7 +477,11 @@ def _canonical_key(product):
 def _dedupe_products(products):
     unique_products = {}
     for product in products:
-        unique_products[_canonical_key(product)] = product
+        key = _canonical_key(product)
+        # Local-fallback products take priority over CSV products
+        existing = unique_products.get(key)
+        if existing is None or (product.get("source") == "local-fallback" and existing.get("source") != "local-fallback"):
+            unique_products[key] = product
     return list(unique_products.values())
 
 
@@ -212,7 +494,7 @@ def _infer_product_tags(product):
             tags.add(tag)
 
     category = product.get("category", "").lower()
-    if category in {"snacks", "chips", "bakery", "chocolate", "icecream"}:
+    if category in {"snacks", "chips", "bakery", "chocolate", "icecream", "gourmet"}:
         tags.add("snack")
     if category in {"drinks", "tea"}:
         tags.add("drink")
@@ -228,6 +510,7 @@ def _infer_product_tags(product):
         tags.add("party_food")
     if category in {"dairy", "breakfast"}:
         tags.add("breakfast")
+        tags.add("dairy")
     if category in {"cereal", "health"}:
         tags.add("healthy_snack")
     if "healthy" in product_text:
@@ -238,7 +521,7 @@ def _infer_product_tags(product):
 
 def _is_food_request(user_constraints):
     return (
-        user_constraints.get("category") in {"snacks", "healthy_snacks", "drinks", "instant_food", "breakfast", "party_food"}
+        user_constraints.get("category") in {"snacks", "healthy_snacks", "drinks", "instant_food", "breakfast", "party_food", "dairy", "butter"}
         or bool(user_constraints.get("occasion"))
         or any(constraint in {"healthy", "vegan", "vegetarian", "high protein", "low sugar"} for constraint in user_constraints.get("constraints", []))
     )
@@ -273,11 +556,13 @@ def _allowed_tags_for_request(user_constraints):
     if occasion == "guest preparation" or category == "party_food":
         return {"party_food", "snack", "drink", "sweet_snack"}
     if occasion == "butter" or category == "butter":
-        return {"butter", "breakfast", "general"}
+        return {"butter", "breakfast", "dairy", "general"}
     if occasion == "yogurt" or category == "yogurt":
-        return {"breakfast", "general"}
+        return {"breakfast", "dairy", "general"}
     if occasion == "quick healthy breakfast" or category == "breakfast":
-        return {"breakfast", "healthy_snack", "drink"}
+        return {"breakfast", "healthy_snack", "drink", "dairy"}
+    if category == "dairy":
+        return {"dairy", "breakfast", "butter"}
     if category == "baby":
         return {"baby"}
     if category == "emergency":
@@ -290,7 +575,7 @@ def _allowed_tags_for_request(user_constraints):
         return {"healthy_snack", "healthy_drink", "snack"}
     if category == "snacks" or occasion == "movie night":
         return {"snack", "healthy_snack", "drink", "healthy_drink", "sweet_snack"}
-    return {"snack", "healthy_snack", "drink", "healthy_drink", "instant_food", "sweet_snack", "first_aid", "baby", "emergency", "party_food", "breakfast", "butter"}
+    return {"snack", "healthy_snack", "drink", "healthy_drink", "instant_food", "sweet_snack", "first_aid", "baby", "emergency", "party_food", "breakfast", "butter", "dairy"}
 
 
 def _matches_request_type(product, user_constraints):
@@ -308,15 +593,26 @@ def _matches_request_type(product, user_constraints):
     return True
 
 
+# ─── Public API ────────────────────────────────────────────────────────────────
+
 def get_products():
-    products = [
+    """Get all products: local JSON products (priority) merged with CSV products."""
+    # Load local JSON products first (priority)
+    local_products = [
         {
             **_normalize_product(product, source_name="local-fallback"),
             "source": "local-fallback",
         }
         for product in _load_local_products()
     ]
-    return _dedupe_products(products)
+    
+    # Load CSV products
+    csv_raw = _load_csv_products()
+    csv_products = [_normalize_csv_product(p) for p in csv_raw]
+    
+    # Merge: local products first (they take priority in dedup)
+    all_products = local_products + csv_products
+    return _dedupe_products(all_products)
 
 
 def search_products(query, user_constraints=None):
@@ -351,6 +647,8 @@ def search_products(query, user_constraints=None):
             semantic_bonus += 40
         if (user_constraints.get("occasion") == "butter" or user_constraints.get("category") == "butter") and "butter" in tags:
             semantic_bonus += 50
+        if (user_constraints.get("category") in {"dairy", "butter"}) and "dairy" in tags:
+            semantic_bonus += 40
         if user_constraints.get("category") == "baby" and "baby" in tags:
             semantic_bonus += 50
         if user_constraints.get("category") == "emergency" and "emergency" in tags:
@@ -359,7 +657,10 @@ def search_products(query, user_constraints=None):
         if "healthy" in user_constraints.get("constraints", []) and tags & {"healthy_snack", "healthy_drink"}:
             semantic_bonus += 18
 
-        total_score = token_overlap * 8 + tag_overlap + semantic_bonus
+        # Boost local-fallback products slightly in search
+        source_bonus = 5 if product.get("source") == "local-fallback" else 0
+
+        total_score = token_overlap * 8 + tag_overlap + semantic_bonus + source_bonus
         if total_score > 0:
             scored_products.append((total_score, product))
 
@@ -382,7 +683,7 @@ def search_products(query, user_constraints=None):
 def _score_relevance(product, user_constraints):
     goal = user_constraints.get("goal", "").lower()
     goal_tokens = set(_tokenize(goal))
-    
+
     # Expand goal tokens for synonym matching
     if "yogurt" in goal_tokens or "yogurt" in goal:
         goal_tokens.add("curd")
@@ -390,6 +691,8 @@ def _score_relevance(product, user_constraints):
     if "curd" in goal_tokens or "curd" in goal:
         goal_tokens.add("yogurt")
         goal_tokens.add("curd")
+    if "butter" in goal_tokens or "butter" in goal:
+        goal_tokens.add("butter")
 
     product_tokens = set(_tokenize(_product_text(product)))
     tags = _infer_product_tags(product)
@@ -397,13 +700,15 @@ def _score_relevance(product, user_constraints):
 
     overlap = len(goal_tokens & product_tokens) * 12
     tag_bonus = 0
-    
+
     # Occasion exact match bonus
     occasion = user_constraints.get("occasion")
     if occasion:
         occ_lower = occasion.lower()
         prod_name_lower = product.get("name", "").lower()
         if occ_lower == "yogurt" and any(x in prod_name_lower for x in ["yogurt", "curd", "dahi"]):
+            tag_bonus += 50
+        elif occ_lower == "butter" and "butter" in prod_name_lower:
             tag_bonus += 50
         elif occ_lower in prod_name_lower:
             tag_bonus += 50
@@ -414,8 +719,10 @@ def _score_relevance(product, user_constraints):
         tag_bonus += 25
     if user_constraints.get("category") == "healthy_snacks" and tags & {"healthy_snack", "healthy_drink"}:
         tag_bonus += 28
-    if user_constraints.get("category") == "breakfast" and tags & {"healthy_snack", "instant_food"}:
+    if user_constraints.get("category") in {"breakfast", "dairy"} and tags & {"breakfast", "dairy", "healthy_snack"}:
         tag_bonus += 28
+    if user_constraints.get("category") == "butter" and "butter" in tags:
+        tag_bonus += 40
     if user_constraints.get("category") == "party_food" and tags & {"snack", "sweet_snack"}:
         tag_bonus += 22
     if user_constraints.get("category") == "drinks" and tags & {"drink", "healthy_drink"}:
@@ -467,32 +774,33 @@ def _score_constraints(product, user_constraints):
 
 
 def _calculate_ranking_base_score(product):
+    """
+    Calculate base ranking score using:
+    40% rating, 25% delivery speed, 20% purchase frequency, 15% repeat purchases.
+    Each factor is normalized to 0-10 scale.
+    """
     # Rating: 0.0 to 5.0 -> normalize to 0-10
-    rating_score = float(product.get("rating", 4.5)) * 2.0
-    
-    # Purchase count: 50 to 500 -> normalize to 0-10
-    purchase_count = float(product.get("purchase_count", 100))
-    purchase_score = (purchase_count / 500.0) * 10.0
-    
-    # Popularity: 10 to 100 -> normalize to 0-10
-    popularity = float(product.get("popularity", 50))
-    popularity_score = (popularity / 100.0) * 10.0
-    
-    # Repeat purchases: 10 to 150 -> normalize to 0-10
-    repeat_purchases = float(product.get("repeat_purchases", 20))
-    repeat_score = (repeat_purchases / 150.0) * 10.0
-    
-    # Delivery speed: lower is better (8 mins -> 10, 20 mins -> 0)
+    raw_rating = float(product.get("rating", 4.0))
+    rating_score = min(10.0, (raw_rating / 5.0) * 10.0)
+
+    # Delivery speed: lower is better (8 mins -> 10, 25 mins -> 0)
     delivery_mins = float(product.get("deliveryMins", 15))
-    delivery_score = max(0.0, (20.0 - delivery_mins) / 12.0 * 10.0)
-    
-    # Weighted sum: Rating (30%), Purchase Count (20%), Popularity (20%), Repeat Purchases (10%), Delivery Speed (20%)
+    delivery_score = max(0.0, min(10.0, (25.0 - delivery_mins) / 17.0 * 10.0))
+
+    # Purchase frequency: 30 to 500 -> normalize to 0-10
+    purchase_count = float(product.get("purchase_count", 100))
+    purchase_score = min(10.0, (purchase_count / 500.0) * 10.0)
+
+    # Repeat purchases: 5 to 150 -> normalize to 0-10
+    repeat_purchases = float(product.get("repeat_purchases", 20))
+    repeat_score = min(10.0, (repeat_purchases / 150.0) * 10.0)
+
+    # Weighted sum: Rating (40%), Delivery Speed (25%), Purchase Frequency (20%), Repeat Purchases (15%)
     base_score = (
-        (rating_score * 0.3) + 
-        (purchase_score * 0.2) + 
-        (popularity_score * 0.2) + 
-        (repeat_score * 0.1) + 
-        (delivery_score * 0.2)
+        (rating_score * 0.40) +
+        (delivery_score * 0.25) +
+        (purchase_score * 0.20) +
+        (repeat_score * 0.15)
     )
     return base_score
 
@@ -505,7 +813,7 @@ def rank_products(products, user_constraints):
         budget_score = _score_budget(product, user_constraints)
         occasion_score = _score_occasion(product, user_constraints)
         constraint_score, matched_constraints = _score_constraints(product, user_constraints)
-        
+
         base_score = _calculate_ranking_base_score(product)
         total_score = round(relevance_score + budget_score + occasion_score + constraint_score + base_score, 2)
 
@@ -637,6 +945,8 @@ def _select_basket_template(user_constraints):
         return BASKET_TEMPLATES["butter"]
     if occasion == "yogurt":
         return BASKET_TEMPLATES["yogurt"]
+    if occasion == "breakfast":
+        return BASKET_TEMPLATES["breakfast"]
     if user_constraints.get("occasion") == "movie night" and "healthy" in user_constraints.get("constraints", []):
         return BASKET_TEMPLATES["healthy movie night"]
     if user_constraints.get("occasion") == "movie night":
@@ -647,8 +957,10 @@ def _select_basket_template(user_constraints):
         return BASKET_TEMPLATES["drinks"]
     if user_constraints.get("category") in {"snacks", "healthy_snacks", "party_food"}:
         return BASKET_TEMPLATES["snacks"]
-    if user_constraints.get("category") == "breakfast":
-        return [["healthy_snack"], ["instant_food"], ["healthy_drink"]]
+    if user_constraints.get("category") in {"breakfast", "dairy"}:
+        return BASKET_TEMPLATES["breakfast"]
+    if user_constraints.get("category") == "butter":
+        return BASKET_TEMPLATES["butter"]
     return []
 
 
@@ -721,10 +1033,10 @@ def _assign_quantities(items, group_size):
     if not items:
         return items
 
-    quantity_plan = []
     if not group_size or group_size <= 1:
         return [{**item, "quantity": 1} for item in items]
 
+    quantity_plan = []
     remaining = group_size
     count = len(items)
     base = max(1, group_size // count)

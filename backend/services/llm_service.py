@@ -20,6 +20,11 @@ ALLOWED_CATEGORIES = {
     "instant_food",
     "breakfast",
     "party_food",
+    "first_aid",
+    "baby",
+    "emergency",
+    "dairy",
+    "butter",
     "general",
 }
 ALLOWED_CONSTRAINTS = {
@@ -81,32 +86,60 @@ def _fallback_intent(query: str) -> dict[str, Any]:
     occasion = None
     requested_action = "recommend"
 
-    if any(term in lowered for term in ["cut", "finger", "injury", "hurt", "bleed", "bandage", "first aid", "first-aid"]):
+    # Emergency / first-aid detection
+    if any(term in lowered for term in ["cut", "finger", "injury", "hurt", "bleed", "bandage", "first aid", "first-aid", "wound", "bleeding"]):
         category = "first_aid"
         occasion = "first aid emergency"
-    elif any(term in lowered for term in ["guest", "guests", "friend", "friends"]):
-        category = "party_food"
-        occasion = "guest preparation"
-    elif any(term in lowered for term in ["breakfast", "morning meal"]):
-        category = "breakfast"
-        occasion = "quick healthy breakfast"
+    elif any(term in lowered for term in ["burn", "burned", "burnt", "scalded"]):
+        category = "first_aid"
+        occasion = "first aid emergency"
+    elif any(term in lowered for term in ["fever", "temperature", "sick", "unwell"]):
+        category = "first_aid"
+        occasion = "first aid emergency"
+    elif any(term in lowered for term in ["power outage", "power cut", "blackout", "no electricity", "no power", "no light"]):
+        category = "emergency"
+        occasion = "power outage"
+    # Baby detection
+    elif any(term in lowered for term in ["baby", "diaper", "diapers", "infant", "newborn", "baby food", "baby wipes"]):
+        category = "baby"
+        occasion = "baby care"
+    # Product-specific detection
     elif "butter" in lowered:
-        category = "breakfast"
+        category = "butter"
         occasion = "butter"
-        if "order" in lowered or "add" in lowered:
+        if "order" in lowered or "add" in lowered or "want" in lowered or "get" in lowered or "buy" in lowered:
             requested_action = "add_to_cart"
     elif any(term in lowered for term in ["yogurt", "curd", "dahi"]):
-        category = "breakfast"
+        category = "dairy"
         occasion = "yogurt"
-        if "order" in lowered or "add" in lowered:
+        if "order" in lowered or "add" in lowered or "want" in lowered or "get" in lowered or "buy" in lowered:
             requested_action = "add_to_cart"
-    elif any(term in lowered for term in ["snack", "chips", "popcorn", "nachos", "cookie", "granola", "nuts", "makhana"]):
+    elif any(term in lowered for term in ["milk", "paneer", "cheese", "ghee"]):
+        category = "dairy"
+        occasion = None
+        if "order" in lowered or "add" in lowered or "want" in lowered or "get" in lowered or "buy" in lowered:
+            requested_action = "add_to_cart"
+    # Occasion detection
+    elif any(term in lowered for term in ["guest", "guests", "friend", "friends", "visitors", "people coming"]):
+        category = "party_food"
+        occasion = "guest preparation"
+    elif any(term in lowered for term in ["breakfast", "morning meal", "morning food"]):
+        category = "breakfast"
+        occasion = "quick healthy breakfast"
+    elif any(term in lowered for term in ["healthy snack", "healthy snacks", "health food", "diet"]):
+        category = "healthy_snacks"
+    # Snack / specific product detection
+    elif any(term in lowered for term in ["chips", "want chips", "order chips", "nachos", "popcorn"]):
         category = "snacks"
-    elif any(term in lowered for term in ["drink", "juice", "soda", "coke", "sprite", "water"]):
+        if "order" in lowered or "add" in lowered or "want" in lowered or "get" in lowered or "buy" in lowered:
+            requested_action = "add_to_cart"
+    elif any(term in lowered for term in ["snack", "cookie", "granola", "nuts", "makhana", "biscuit", "namkeen"]):
+        category = "snacks"
+    elif any(term in lowered for term in ["drink", "juice", "soda", "coke", "sprite", "water", "beverage"]):
         category = "drinks"
     elif any(term in lowered for term in ["instant food", "maggi", "noodle", "noodles", "pasta", "ramen", "soup", "oats"]):
         category = "instant_food"
-    elif any(term in lowered for term in ["breakfast", "oats", "cereal", "toast", "bread", "milk"]):
+    elif any(term in lowered for term in ["cereal", "toast", "bread"]):
         category = "breakfast"
     elif any(term in lowered for term in ["party", "ipl", "watch party", "movie night"]):
         category = "party_food"
@@ -210,11 +243,13 @@ def detect_intent(query: str) -> dict[str, Any]:
             "content": (
                 "You extract shopping intent from user queries. "
                 "Return valid JSON only with keys: goal, category, budget, occasion, group_size, constraints, requested_action. "
-                "Allowed categories: snacks, healthy_snacks, drinks, instant_food, breakfast, party_food, general. "
+                "Allowed categories: snacks, healthy_snacks, drinks, instant_food, breakfast, party_food, first_aid, baby, emergency, dairy, butter, general. "
                 "Allowed requested_action values: recommend, add_to_cart, get_cart, clear_cart, checkout. "
                 "Constraints should be a JSON array of short lowercase strings. "
                 "Use null when a value is unknown. "
                 "Normalize occasion to snake_case if needed. "
+                "For injuries/cuts/burns use category=first_aid. For baby products use category=baby. For power outages use category=emergency. "
+                "For butter/milk/cheese/yogurt/paneer use category=dairy or category=butter as appropriate. "
                 "Do not add any explanation."
             ),
         },

@@ -1,6 +1,6 @@
 import React from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { colors } from "../../theme/colors";
 import { topTabs } from "../../data/products";
 
@@ -32,7 +32,7 @@ export default function SearchHeader({
           <Ionicons name="mic" size={22} color="#121820" />
         </Pressable>
       </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabRow}>
+      <View style={styles.tabRow}>
         {topTabs.map((tab) => (
           <Pressable key={tab.id} onPress={() => setActiveTab(tab.id)} style={styles.tabItem}>
             <MaterialCommunityIcons
@@ -44,7 +44,7 @@ export default function SearchHeader({
             {activeTab === tab.id ? <View style={styles.tabUnderline} /> : null}
           </Pressable>
         ))}
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -52,7 +52,7 @@ export default function SearchHeader({
 const styles = StyleSheet.create({
   searchSticky: {
     backgroundColor: "#ffffff",
-    borderBottomColor: colors.stroke,
+    borderBottomColor: "#f0f2f4",
     borderBottomWidth: 1,
     paddingHorizontal: 14,
     paddingTop: 10
@@ -60,10 +60,10 @@ const styles = StyleSheet.create({
   searchBox: {
     alignItems: "center",
     backgroundColor: colors.search,
-    borderRadius: 25,
+    borderRadius: 28,
     flexDirection: "row",
-    minHeight: 52,
-    paddingHorizontal: 14
+    minHeight: 50,
+    paddingHorizontal: 16
   },
   leadingIcon: {
     marginRight: 8
@@ -89,13 +89,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8
   },
   tabRow: {
-    gap: 12,
+    flexDirection: "row",
+    justifyContent: "space-evenly",
     paddingTop: 12
   },
   tabItem: {
     alignItems: "center",
-    minHeight: 52,
-    minWidth: 58
+    flex: 1,
+    minHeight: 52
   },
   tabText: {
     color: "#272c33",

@@ -38,38 +38,42 @@ export default function QuickActions({ onAction }) {
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: 4,
-    marginTop: 10
+    marginBottom: 6,
+    marginTop: 12
   },
   title: {
     color: colors.ink,
-    fontSize: 21,
-    fontWeight: "900",
-    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: "800",
+    marginBottom: 12,
     marginHorizontal: 16
   },
   row: {
-    gap: 9,
+    gap: 10,
     paddingHorizontal: 16
   },
   action: {
-    borderColor: colors.stroke,
-    borderRadius: 8,
-    borderWidth: 1,
+    borderColor: "transparent",
+    borderRadius: 14,
+    borderWidth: 0,
     height: 112,
-    padding: 12,
-    width: 124
+    padding: 13,
+    width: 124,
+    shadowColor: "#0f172a",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6
   },
   actionTitle: {
     color: colors.ink,
     fontSize: 13,
-    fontWeight: "900",
-    marginTop: 9
+    fontWeight: "800",
+    marginTop: 10
   },
   actionSub: {
     color: colors.muted,
     fontSize: 10,
-    fontWeight: "700",
+    fontWeight: "600",
     marginTop: 3
   }
 });

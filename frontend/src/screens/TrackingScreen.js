@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Animated, ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Animated, ActivityIndicator, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors } from "../theme/colors";
 
 const steps = [
@@ -23,6 +23,9 @@ export default function TrackingScreen({
   triggerGlobalNotification
 }) {
   const [currentStep, setCurrentStep] = useState(0);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [ratingSubmitted, setRatingSubmitted] = useState(false);
 
   // Position coordinates for the rider:
   // Starts at store/pickup (x=290, y=86) and ends at home (x=64, y=152)
@@ -45,6 +48,28 @@ export default function TrackingScreen({
 
     return () => clearInterval(interval);
   }, []);
+
+  // Show rating popup when delivery is complete
+  useEffect(() => {
+    if (currentStep === steps.length - 1 && !ratingSubmitted) {
+      const timer = setTimeout(() => {
+        setShowRatingModal(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep]);
+
+  const handleSubmitRating = () => {
+    setRatingSubmitted(true);
+    setTimeout(() => {
+      setShowRatingModal(false);
+    }, 1500);
+  };
+
+  const handleSkipRating = () => {
+    setShowRatingModal(false);
+    setRatingSubmitted(true);
+  };
 
   useEffect(() => {
     Animated.parallel([
@@ -222,6 +247,56 @@ export default function TrackingScreen({
           <Text style={styles.totalLine}>Bill total ₹{total}</Text>
         </View>
       </ScrollView>
+
+      {/* Driver Rating Modal */}
+      <Modal
+        visible={showRatingModal}
+        transparent
+        animationType="fade"
+        onRequestClose={handleSkipRating}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            {!ratingSubmitted ? (
+              <>
+                <View style={styles.modalIconContainer}>
+                  <Ionicons name="star" size={36} color="#ff9900" />
+                </View>
+                <Text style={styles.modalTitle}>Rate Your Driver</Text>
+                <Text style={styles.modalMessage}>How was your delivery experience?</Text>
+                <View style={styles.starsRow}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Pressable key={star} onPress={() => setSelectedRating(star)} style={styles.starButton}>
+                      <Ionicons
+                        name={selectedRating >= star ? "star" : "star-outline"}
+                        size={36}
+                        color={selectedRating >= star ? "#ff9900" : "#d1d5db"}
+                      />
+                    </Pressable>
+                  ))}
+                </View>
+                <Pressable
+                  onPress={handleSubmitRating}
+                  disabled={selectedRating === 0}
+                  style={[styles.submitRatingBtn, selectedRating === 0 && styles.submitRatingBtnDisabled]}
+                >
+                  <Text style={styles.submitRatingText}>Submit Rating</Text>
+                </Pressable>
+                <Pressable onPress={handleSkipRating} style={styles.skipBtn}>
+                  <Text style={styles.skipBtnText}>Skip</Text>
+                </Pressable>
+              </>
+            ) : (
+              <>
+                <View style={styles.modalIconContainer}>
+                  <Ionicons name="checkmark-circle" size={48} color="#16a34a" />
+                </View>
+                <Text style={styles.modalTitle}>Thank you for your feedback!</Text>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -529,5 +604,80 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "900",
     marginBottom: 8
+  },
+  modalOverlay: {
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 30
+  },
+  modalCard: {
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 28,
+    width: "100%",
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12
+  },
+  modalIconContainer: {
+    alignItems: "center",
+    backgroundColor: "#fff7e6",
+    borderRadius: 40,
+    height: 72,
+    justifyContent: "center",
+    marginBottom: 16,
+    width: 72
+  },
+  modalTitle: {
+    color: "#111827",
+    fontSize: 20,
+    fontWeight: "900",
+    marginBottom: 8,
+    textAlign: "center"
+  },
+  modalMessage: {
+    color: "#6b7280",
+    fontSize: 14,
+    fontWeight: "500",
+    marginBottom: 20,
+    textAlign: "center"
+  },
+  starsRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 24
+  },
+  starButton: {
+    padding: 4
+  },
+  submitRatingBtn: {
+    alignItems: "center",
+    backgroundColor: "#ff9900",
+    borderRadius: 8,
+    height: 46,
+    justifyContent: "center",
+    width: "100%"
+  },
+  submitRatingBtnDisabled: {
+    backgroundColor: "#f3d078",
+    opacity: 0.7
+  },
+  submitRatingText: {
+    color: "#111827",
+    fontSize: 15,
+    fontWeight: "800"
+  },
+  skipBtn: {
+    marginTop: 14,
+    padding: 8
+  },
+  skipBtnText: {
+    color: "#6b7280",
+    fontSize: 14,
+    fontWeight: "600"
   }
 });

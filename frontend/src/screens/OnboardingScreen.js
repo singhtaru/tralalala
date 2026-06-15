@@ -126,15 +126,15 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     alignItems: "center",
-    borderRadius: 48,
+    borderRadius: 36,
     height: 120,
     justifyContent: "center",
     marginBottom: 32,
     width: 120,
     shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12
   },
   title: {
     color: "#111827",
@@ -174,15 +174,15 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     backgroundColor: "#ff9900",
-    borderRadius: 8,
+    borderRadius: 12,
     flexDirection: "row",
-    height: 48,
+    height: 50,
     justifyContent: "center",
     width: "100%",
     shadowColor: "#ff9900",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
-    shadowRadius: 6
+    shadowRadius: 8
   },
   buttonText: {
     color: "#111827",

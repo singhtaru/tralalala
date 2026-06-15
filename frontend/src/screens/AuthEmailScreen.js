@@ -3,6 +3,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { colors } from "../theme/colors";
 
+const AMAZON_IN_LOGO = require("../../assets/amazon-in.jpg");
+
 export default function AuthEmailScreen({
   email,
   onNext,
@@ -54,7 +56,7 @@ export default function AuthEmailScreen({
       {/* iOS Top Nav Bar */}
       <View style={styles.navBar}>
         <Text style={styles.navCancel}>Cancel</Text>
-        <Text style={styles.navTitle}>amazon.in</Text>
+        <Image source={AMAZON_IN_LOGO} style={styles.navLogo} resizeMode="contain" />
         <Ionicons name="ellipsis-horizontal" size={20} color="#007aff" />
       </View>
 
@@ -133,11 +135,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "400"
   },
-  navTitle: {
-    color: "#000000",
-    fontSize: 16,
-    fontWeight: "700",
-    letterSpacing: -0.3
+  navLogo: {
+    height: 38,
+    width: 140
   },
   content: {
     paddingHorizontal: 16,
@@ -169,12 +169,12 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     alignItems: "center",
-    borderColor: "#a1a1aa",
-    borderRadius: 4,
+    borderColor: "#d1d5db",
+    borderRadius: 8,
     borderWidth: 1,
     flexDirection: "row",
-    height: 44,
-    paddingHorizontal: 10
+    height: 46,
+    paddingHorizontal: 12
   },
   input: {
     color: "#000000",
@@ -189,14 +189,14 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     backgroundColor: "#ff9900",
-    borderRadius: 4,
-    height: 44,
+    borderRadius: 8,
+    height: 46,
     justifyContent: "center",
-    marginTop: 10,
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 1 },
+    marginTop: 12,
+    shadowColor: "#ff9900",
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
-    shadowRadius: 1
+    shadowRadius: 4
   },
   buttonDisabled: {
     backgroundColor: "#f3d078",

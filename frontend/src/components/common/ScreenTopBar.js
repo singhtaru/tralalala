@@ -21,12 +21,12 @@ const styles = StyleSheet.create({
   topBar: {
     alignItems: "center",
     backgroundColor: "#ffffff",
-    borderBottomColor: colors.stroke,
+    borderBottomColor: "#f0f2f4",
     borderBottomWidth: 1,
     flexDirection: "row",
-    gap: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 12
+    gap: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 14
   },
   backButton: {
     alignItems: "center",
@@ -36,9 +36,9 @@ const styles = StyleSheet.create({
   },
   backText: {
     color: colors.ink,
-    fontSize: 40,
-    fontWeight: "400",
-    lineHeight: 40
+    fontSize: 36,
+    fontWeight: "300",
+    lineHeight: 38
   },
   copy: {
     flex: 1
@@ -46,17 +46,17 @@ const styles = StyleSheet.create({
   title: {
     color: colors.ink,
     fontSize: 18,
-    fontWeight: "900"
+    fontWeight: "800"
   },
   subtitle: {
     color: "#007185",
     fontSize: 12,
-    fontWeight: "800",
-    marginTop: 1
+    fontWeight: "600",
+    marginTop: 2
   },
   action: {
     color: colors.ink,
     fontSize: 13,
-    fontWeight: "900"
+    fontWeight: "800"
   }
 });

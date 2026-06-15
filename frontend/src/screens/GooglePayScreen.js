@@ -69,10 +69,13 @@ export default function GooglePayScreen({ amount, flow = "recharge", onSuccess, 
 
             <View style={styles.paymentMethod}>
               <Ionicons name="card" size={22} color="#1a73e8" style={{ marginRight: 10 }} />
-              <View>
+              <View style={{ flex: 1 }}>
                 <Text style={styles.methodTitle}>HDFC Bank Debit Card</Text>
                 <Text style={styles.methodSubtitle}>•••• 4029</Text>
               </View>
+              <Pressable style={styles.changeMethodBtn}>
+                <Text style={styles.changeMethodText}>Change</Text>
+              </Pressable>
             </View>
 
             <Pressable onPress={handlePayment} style={styles.payButton}>
@@ -217,6 +220,18 @@ const styles = StyleSheet.create({
   methodSubtitle: {
     color: "#5f6368",
     fontSize: 12
+  },
+  changeMethodBtn: {
+    borderColor: "#1a73e8",
+    borderRadius: 4,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 5
+  },
+  changeMethodText: {
+    color: "#1a73e8",
+    fontSize: 12,
+    fontWeight: "700"
   },
   payButton: {
     alignItems: "center",

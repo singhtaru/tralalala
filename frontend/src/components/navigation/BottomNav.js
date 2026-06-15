@@ -16,7 +16,7 @@ export default function BottomNav({ active, cartCount, setScreen }) {
     <View style={styles.bottomNav}>
       {navItems.map((item) => {
         const isCart = item.id === "cart";
-        const label = isCart ? `${item.label} ${cartCount}` : item.label;
+        const label = isCart ? `${item.label} (${cartCount})` : item.label;
         const isActive = active === item.id;
         const iconColor = isActive ? colors.amazonOrange : colors.ink;
 
@@ -44,14 +44,14 @@ const styles = StyleSheet.create({
     ...shadows.floatingBar,
     alignItems: "center",
     backgroundColor: "#ffffff",
-    borderColor: colors.stroke,
-    borderRadius: 28,
+    borderColor: "#f0f2f4",
+    borderRadius: 24,
     borderWidth: 1,
     bottom: 14,
     flexDirection: "row",
     justifyContent: "space-around",
     left: 18,
-    paddingVertical: 9,
+    paddingVertical: 10,
     position: "absolute",
     right: 18
   },
@@ -62,8 +62,8 @@ const styles = StyleSheet.create({
   navLabel: {
     color: colors.ink,
     fontSize: 11,
-    fontWeight: "800",
-    marginTop: 2
+    fontWeight: "700",
+    marginTop: 3
   },
   navActive: {
     color: colors.amazonOrange

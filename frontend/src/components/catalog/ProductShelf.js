@@ -55,24 +55,24 @@ export default function ProductShelf({
 const styles = StyleSheet.create({
   section: {
     paddingHorizontal: 16,
-    paddingTop: 8
+    paddingTop: 12
   },
   headingRow: {
     alignItems: "center",
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    marginBottom: 12
   },
   title: {
     color: "#242931",
-    fontSize: 24,
-    fontWeight: "900",
-    letterSpacing: 0,
-    marginBottom: 12
+    fontSize: 20,
+    fontWeight: "800",
+    letterSpacing: -0.2
   },
   action: {
     color: "#007185",
     fontSize: 13,
-    fontWeight: "900"
+    fontWeight: "700"
   },
   grid: {
     flexDirection: "row",
@@ -81,6 +81,6 @@ const styles = StyleSheet.create({
   },
   horizontal: {
     gap: 12,
-    paddingBottom: 8
+    paddingBottom: 10
   }
 });

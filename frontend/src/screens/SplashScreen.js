@@ -104,8 +104,7 @@ export default function SplashScreen({ onFinish }) {
             styles.videoBox,
             {
               width: videoRenderWidth,
-              height: videoRenderHeight,
-              backgroundColor: "#000000"
+              height: videoRenderHeight
             }
           ]}
         >
@@ -141,7 +140,7 @@ export default function SplashScreen({ onFinish }) {
 
 const styles = StyleSheet.create({
   splash: {
-    backgroundColor: "#000000",
+    backgroundColor: "#131921",
     flex: 1
   },
   videoStage: {

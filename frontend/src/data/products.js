@@ -99,11 +99,10 @@ const categoryMeta = {
 };
 
 export const topTabs = [
-  { id: "all", label: "All", icon: "shopping-outline", categories: [] },
-  { id: "grocery", label: "Grocery", icon: "basket-outline", categories: ["fruits", "atta", "oil", "dairy"] },
+  { id: "all", label: "Amazon Now", icon: "shopping-outline", categories: [] },
+  { id: "grocery", label: "Fresh", icon: "basket-outline", categories: ["fruits", "atta", "oil", "dairy"] },
   { id: "snacks", label: "Snacks", icon: "food-outline", categories: ["bakery", "chips", "chocolate", "instant", "icecream"] },
-  { id: "drinks", label: "Drinks", icon: "cup-outline", categories: ["drinks", "tea"] },
-  { id: "home", label: "Home", icon: "home-outline", categories: ["kitchen", "cereal", "health", "meat"] }
+  { id: "drinks", label: "Fastest Delivery", icon: "cup-outline", categories: ["drinks", "tea"] }
 ];
 
 const sectionDefinitions = [

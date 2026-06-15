@@ -5,9 +5,7 @@ import ProductImage from "../components/catalog/ProductImage";
 import ScreenTopBar from "../components/common/ScreenTopBar";
 import { colors } from "../theme/colors";
 
-const paymentOptions = ["Amazon Wallet", "UPI", "Card", "Emergency Deposit", "Pay Later"];
-
-export default function CartScreen({ cart, changeQuantity, emergencyMode, goBack, onCheckout, paymentMethod, setPaymentMethod, total }) {
+export default function CartScreen({ cart, changeQuantity, emergencyMode, goBack, onCheckout, total }) {
   const deliveryFee = 19;
   const handlingFee = 6;
   const discount = 25;
@@ -59,24 +57,6 @@ export default function CartScreen({ cart, changeQuantity, emergencyMode, goBack
               <Text style={styles.billTotalLabel}>Grand total</Text>
               <Text style={styles.billTotalValue}>₹{grandTotal}</Text>
             </View>
-          </View>
-        ) : null}
-        {cart.length ? (
-          <View style={styles.paymentCard}>
-            <Text style={styles.billTitle}>Payment method</Text>
-            <View style={styles.paymentOptions}>
-              {paymentOptions.map((option) => (
-                <Pressable
-                  key={option}
-                  onPress={() => setPaymentMethod(option)}
-                  style={[styles.paymentOption, paymentMethod === option && styles.paymentOptionSelected]}
-                >
-                  <Text style={[styles.paymentOptionText, paymentMethod === option && styles.paymentOptionTextSelected]}>{option}</Text>
-                </Pressable>
-              ))}
-            </View>
-            {paymentMethod === "Emergency Deposit" ? <Text style={styles.paymentNote}>Used only if your Amazon Wallet balance is insufficient.</Text> : null}
-            {paymentMethod === "Pay Later" ? <Text style={styles.paymentNote}>Pay before arrival or upon delivery.</Text> : null}
           </View>
         ) : null}
       </ScrollView>
@@ -140,15 +120,19 @@ const styles = StyleSheet.create({
   cartItem: {
     alignItems: "center",
     backgroundColor: "#ffffff",
-    borderColor: colors.stroke,
-    borderRadius: 8,
+    borderColor: "#f0f2f4",
+    borderRadius: 12,
     borderWidth: 1,
     flexDirection: "row",
     gap: 12,
-    padding: 10
+    padding: 12,
+    shadowColor: "#0f172a",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4
   },
   cartImage: {
-    borderRadius: 7,
+    borderRadius: 10,
     height: 66,
     width: 66
   },
@@ -197,19 +181,12 @@ const styles = StyleSheet.create({
   },
   billCard: {
     backgroundColor: colors.skyLight,
-    borderColor: "#d6edf5",
-    borderRadius: 10,
+    borderColor: "#dbeef5",
+    borderRadius: 14,
     borderWidth: 1,
-    marginTop: 4,
-    padding: 14
+    marginTop: 6,
+    padding: 16
   },
-  paymentCard: { backgroundColor: "#ffffff", borderColor: colors.stroke, borderRadius: 8, borderWidth: 1, padding: 14 },
-  paymentOptions: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  paymentOption: { borderColor: colors.stroke, borderRadius: 7, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 8 },
-  paymentOptionSelected: { backgroundColor: "#fff4df", borderColor: colors.amazonOrange },
-  paymentOptionText: { color: colors.muted, fontSize: 11, fontWeight: "900" },
-  paymentOptionTextSelected: { color: colors.amazonBlue },
-  paymentNote: { color: colors.green, fontSize: 11, fontWeight: "800", lineHeight: 16, marginTop: 10 },
   billTitle: {
     color: colors.ink,
     fontSize: 18,
@@ -278,9 +255,9 @@ const styles = StyleSheet.create({
   },
   checkoutButton: {
     backgroundColor: colors.green,
-    borderRadius: 8,
+    borderRadius: 10,
     paddingHorizontal: 28,
-    paddingVertical: 13
+    paddingVertical: 14
   },
   checkoutDisabled: {
     opacity: 0.45
