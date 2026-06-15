@@ -159,18 +159,71 @@ export default function App() {
     return null;
   };
 
+  const addToLocalCart = (product) => {
+    setCart((prev) => {
+      const existingItem = prev.find((item) => String(item.id) === String(product.id));
+      if (existingItem) {
+        return prev.map((item) =>
+          String(item.id) === String(product.id)
+            ? { ...item, qty: item.qty + 1 }
+            : item
+        );
+      }
+
+      return [...prev, { ...product, qty: 1 }];
+    });
+  };
+
+  const removeFromLocalCart = (product) => {
+    setCart((prev) => {
+      const existingItem = prev.find((item) => String(item.id) === String(product.id));
+      if (!existingItem) {
+        return prev;
+      }
+
+      if (existingItem.qty > 1) {
+        return prev.map((item) =>
+          String(item.id) === String(product.id)
+            ? { ...item, qty: item.qty - 1 }
+            : item
+        );
+      }
+
+      return prev.filter((item) => String(item.id) !== String(product.id));
+    });
+  };
+
   useEffect(() => {
     syncCartFromBackend();
   }, [products]);
 
   const addToCart = async (product) => {
-    const result = await addToBackendCart(product.id);
-    await syncCartFromBackend(result?.cart);
+    // Optimistic update: immediately reflect in UI so the button responds instantly
+    addToLocalCart(product);
+    // Then sync with backend in the background
+    try {
+      const result = await addToBackendCart(product.id);
+      if (result?.cart) {
+        await syncCartFromBackend(result.cart);
+      }
+      // If backend fails, the local optimistic update remains — that's fine
+    } catch (e) {
+      console.error("addToCart error:", e);
+    }
   };
 
   const removeFromCart = async (product) => {
-    const result = await removeFromBackendCart(product.id);
-    await syncCartFromBackend(result?.cart);
+    // Optimistic update: immediately reflect in UI
+    removeFromLocalCart(product);
+    // Then sync with backend in the background
+    try {
+      const result = await removeFromBackendCart(product.id);
+      if (result?.cart) {
+        await syncCartFromBackend(result.cart);
+      }
+    } catch (e) {
+      console.error("removeFromCart error:", e);
+    }
   };
 
   const changeQuantity = (item, delta) => {

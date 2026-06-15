@@ -15,6 +15,10 @@ export default function ProductCard({
   const discount = product.mrp > product.price
     ? Math.round(((product.mrp - product.price) / product.mrp) * 100)
     : 0;
+  const handleNestedPress = (event, callback) => {
+    event?.stopPropagation?.();
+    callback?.();
+  };
 
   return (
     <Pressable
@@ -48,16 +52,16 @@ export default function ProductCard({
         {onIncrement ? (
           quantity > 0 ? (
             <View style={styles.stepper}>
-              <Pressable onPress={onDecrement} style={styles.stepButton}>
+              <Pressable onPress={(event) => handleNestedPress(event, onDecrement)} style={styles.stepButton}>
                 <Ionicons name="remove" size={18} color="#ffffff" />
               </Pressable>
               <Text style={styles.stepCount}>{quantity}</Text>
-              <Pressable onPress={onIncrement} style={styles.stepButton}>
+              <Pressable onPress={(event) => handleNestedPress(event, onIncrement)} style={styles.stepButton}>
                 <Ionicons name="add" size={18} color="#ffffff" />
               </Pressable>
             </View>
           ) : (
-            <Pressable onPress={onIncrement} style={styles.addButton}>
+            <Pressable onPress={(event) => handleNestedPress(event, onIncrement)} style={styles.addButton}>
               <Text style={styles.addText}>ADD</Text>
             </Pressable>
           )

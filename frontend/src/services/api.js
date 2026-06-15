@@ -1,4 +1,18 @@
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000";
+const BASE_URL = (process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000").trim();
+
+// Fetch with a timeout so the app doesn't hang when the backend is unreachable
+async function fetchWithTimeout(url, options = {}, timeoutMs = 5000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(timer);
+    return response;
+  } catch (err) {
+    clearTimeout(timer);
+    throw err;
+  }
+}
 
 export function toBackendId(id) {
   return encodeURIComponent(String(id));
@@ -46,7 +60,7 @@ export function normalizeBackendProduct(backendProd, localProducts = []) {
 
 export async function fetchProducts() {
   try {
-    const response = await fetch(`${BASE_URL}/products`);
+    const response = await fetchWithTimeout(`${BASE_URL}/products`);
     if (!response.ok) throw new Error("Failed to fetch products");
     return await response.json();
   } catch (error) {
@@ -57,7 +71,7 @@ export async function fetchProducts() {
 
 export async function fetchCart() {
   try {
-    const response = await fetch(`${BASE_URL}/cart`);
+    const response = await fetchWithTimeout(`${BASE_URL}/cart`);
     if (!response.ok) throw new Error("Failed to fetch cart");
     return await response.json();
   } catch (error) {
@@ -69,7 +83,7 @@ export async function fetchCart() {
 export async function addToBackendCart(productId) {
   try {
     const bId = toBackendId(productId);
-    const response = await fetch(`${BASE_URL}/cart/items/${bId}`, {
+    const response = await fetchWithTimeout(`${BASE_URL}/cart/items/${bId}`, {
       method: "POST"
     });
     if (!response.ok) throw new Error("Failed to add to cart");
@@ -83,7 +97,7 @@ export async function addToBackendCart(productId) {
 export async function removeFromBackendCart(productId) {
   try {
     const bId = toBackendId(productId);
-    const response = await fetch(`${BASE_URL}/cart/items/${bId}`, {
+    const response = await fetchWithTimeout(`${BASE_URL}/cart/items/${bId}`, {
       method: "DELETE"
     });
     if (!response.ok) throw new Error("Failed to remove from cart");
@@ -96,7 +110,7 @@ export async function removeFromBackendCart(productId) {
 
 export async function clearBackendCart() {
   try {
-    const response = await fetch(`${BASE_URL}/cart/clear`, {
+    const response = await fetchWithTimeout(`${BASE_URL}/cart/clear`, {
       method: "POST"
     });
     if (!response.ok) throw new Error("Failed to clear cart");
@@ -109,7 +123,7 @@ export async function clearBackendCart() {
 
 export async function checkoutBackendCart() {
   try {
-    const response = await fetch(`${BASE_URL}/cart/checkout`, {
+    const response = await fetchWithTimeout(`${BASE_URL}/cart/checkout`, {
       method: "POST"
     });
     if (!response.ok) throw new Error("Failed to checkout");
@@ -122,13 +136,13 @@ export async function checkoutBackendCart() {
 
 export async function sendChatMessage(query, sessionId = "default") {
   try {
-    const response = await fetch(`${BASE_URL}/chat`, {
+    const response = await fetchWithTimeout(`${BASE_URL}/chat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ query, session_id: sessionId })
-    });
+    }, 15000); // 15s timeout for AI chat
     if (!response.ok) throw new Error("Failed to send chat message");
     return await response.json();
   } catch (error) {

@@ -26,7 +26,7 @@ class Product(BaseModel):
     name: str
     category: str
     price: float
-    quantity: Optional[int] = 1
+    quantity: Optional[int | str] = 1
     description: Optional[str] = None
     thumbnail: Optional[str] = None
     source: Optional[str] = None
